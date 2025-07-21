@@ -4,8 +4,9 @@ Microbial stoichiometry following Rittmann and McCarty's "Environmental Biotechn
 # Maintainer
 Sasha D. Hafner (https://au.dk/sasha.hafner@bce.au.dk)
 
-# Summary
-Initially, this repo contains some development functions for predicting fermentation and methanogenesis stoichiometry.
+# Description
+This repo contains some functions for predicting fermentation and methanogenesis stoichiometry from chemical formulas based on Rittmann and McCarty's approach.
+These are not polished or even completed functions but the repo is public in case users find them useful.
 The `readFormula()` function is from the [biogas package](https://github.com/sashahafner/biogas).
 
 # Reference

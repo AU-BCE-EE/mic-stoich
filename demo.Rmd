@@ -1,0 +1,49 @@
+---
+title: '`predFerm()` demonstrations'
+output: pdf_document
+author: Sasha D. Hafner
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+Load functions.
+
+```{r}
+source('readFormula.R')
+source('predFerm.R')
+```
+
+Show arguments.
+
+```{r}
+args(predFerm)
+```
+
+Example calls.
+
+1. Glucose to ethanol (section 5.6.1 in R & M)
+
+```{r}
+predFerm(donor = 'C6H10O5', acceptor = 'CH3CH2OH')
+```
+
+```{r}
+predFerm(donor = 'C6H10O5', acceptor = 'CH3CH2OH', fs = 0.22)
+```
+
+2. Glucose to lactic acid 
+
+```{r}
+predFerm(donor = 'C6H10O5', acceptor = 'C3H6O3', fs = 0.1)
+```
+
+3. Lipids to acetic acid
+
+```{r}
+predFerm(donor = 'C57H104O6', acceptor = 'CH3COOH', fs = 0.1)
+```
+
+4. Citrate to two products (Example 5.6 in R & M)
+
+```{r}
+predFerm(donor = 'COOHCH2COHCOOHCH2COOH', acceptor = 'HCOOH(H3CCOOH)2')
+```
