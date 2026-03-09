@@ -1,4 +1,3 @@
 export(micstoich)
-export(orgstoich)
 export(molmass)
 export(calcCOD)

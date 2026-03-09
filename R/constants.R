@@ -1,46 +1,8 @@
 # Constants used in functions
 
-# Names are 'acceptor product' (space between)
-rxn <- list(
-  'CO2 CH4' =   c(CO2 = -1/8, `H+` = -1, CH4 = 1/8, H2O = 1/4),
-  'O2 H2O'  =   c(O2 = -1/4, `H+` = -1, H2O = 1/2),
-  'NO3- N2' =   c(`NO3-` = -1/5, `H+` = -6/5, N2 = 1/10, H2O = 3/5),
-  'NO3- NH3' =  c(`NO3-` = -1/8, `H+` = -5/4, `NH4+` = 1/8, H2O = 3/8), 
-  'NO3- NO2-' = c(`NO3-` = -1/2, `H+` = -1, `NO2-` = 1/2, H2O = 1/2), 
-  'NO2- N2' =   c(`NO2-` = -1/3, `H+` = -4/3, `N2` = 1/6, H2O = 2/3), 
-  'SO4-2 H2S' = c(`SO4-2` = -1/8, `H+` = -19/16, H2S = 1/16, `HS-` = 1/16, H2O = 1/2)
-)
-
-# Standard chemical formulas for mcomp
-std.forms <- c(
-	       # Standard macromolecules
-	       vfa = 'C2H4O2', 
-	       protein = 'C4H6.1O1.2N', # 'C5H7O2N', 
-	       carbohydrate = 'C6H10O5', 
-	       lipid = 'C57H104O6', 
-	       lignin = 'C10H13O3', 
-               # Fats
-               tripalmitin = 'C51H98O6',
-	       # Cell biomass 
-	       biomass = 'C5H7O2N', 
-	       # Organic acids
-	       acetic = 'CH3COOH', 
-	       lactic = 'C3H6O3', 
-	       # Alcohols
-	       ethanol = 'CH3CH2OH', 
-	       # Carbohydrates
-	       cellulose = 'C6H10O5', 
-	       glucose = 'C6H12O6',
-	       fructose = 'C6H12O6',
-	       sucrose = 'C12H22O11',
-	       lactose = 'C12H22O11',
-	       # Ash
-	       ash = 'NaCl'
-	       )
-
 # Standard atomic weights
 # These are from CIAAW (http://www.ciaaw.org/atomic-weights.htm), significant digits only
-atom.weights <- c(
+atomweights <- c(
   Al = 26.9815385,
   Sb = 121.760,
   Ar = 39.948,
@@ -125,4 +87,4 @@ atom.weights <- c(
   Y  = 88.90584,
   Zn = 65.38,
   Zr = 91.224
-  )
+)

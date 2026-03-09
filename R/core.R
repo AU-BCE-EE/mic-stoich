@@ -24,32 +24,32 @@ micstoich <- function(
 
   # Half reactions
   # Donor
-  rd <- orgstoich(donor, elements = elements)
+  rd <- orgrxn(donor, elements = elements)
   # Acceptor
   if (is.null(product) || !grepl('C|H', product)) {
     # Trim half reaction names to length of acceptor
-    substr(names(rxn), 1, nchar(acceptor))
-    anm <- as.character(lapply(strsplit(names(rxn), ' '), `[[`, 1))
-    pnm <- as.character(lapply(strsplit(names(rxn), ' '), `[[`, 2))
-    fnm <- names(rxn)
+    substr(names(halfrxn), 1, nchar(acceptor))
+    anm <- as.character(lapply(strsplit(names(halfrxn), ' '), `[[`, 1))
+    pnm <- as.character(lapply(strsplit(names(halfrxn), ' '), `[[`, 2))
+    fnm <- names(halfrxn)
     if (acceptor %in% anm || acceptor %in% fnm) {
       # If in only one anm, use that
       if (sum(acceptor == anm) == 1) {
-        ra <- rxn[[names(rxn)[acceptor == anm]]]
+        ra <- halfrxn[[names(halfrxn)[acceptor == anm]]]
       } else if (sum(acceptor == fnm) == 1) {
-        ra <- rxn[[names(rxn)[acceptor == fnm]]]
+        ra <- halfrxn[[names(halfrxn)[acceptor == fnm]]]
       } else {
-        stop(paste0('product needed. More than one for this acceptor. Pairs are: ', paste(names(rxn), collapse = ', ')))
+        stop(paste0('product needed. More than one for this acceptor. Pairs are: ', paste(names(halfrxn), collapse = ', ')))
       }
     } else {
-      stop(paste0('Problem with acceptor argument: Not found. Extra space? Choices are: ', paste(names(rxn), collapse = ', ')))
+      stop(paste0('Problem with acceptor argument: Not found. Extra space? Choices are: ', paste(names(halfrxn), collapse = ', ')))
     }
   } else {
-    ra <- orgstoich(product, elements = elements)
+    ra <- orgrxn(product, elements = elements)
   }
 
   # Synthesis
-  rc <- orgstoich(bioform, elements = elements)
+  rc <- orgrxn(bioform, elements = elements)
 
   # N source adjustment
   # NTS: need to figure out!
@@ -118,7 +118,7 @@ micstoich <- function(
 }
 
 # Function to get stoichiometry for custom organic reaction (O-19)
-orgstoich <- function(
+orgrxn <- function(
   form, 
   elements =  c('C', 'H', 'O', 'N'),
   dover = FALSE
@@ -184,7 +184,7 @@ readform <- function(
 
   # Build up elementwise formula piecewise
   formpw <- NULL
-  for(i in 1:length(s1)) {
+  for(i in seq_along(s1)) {
     xx <- s1[i]
     if(grepl('\\)', xx)) {
       nn <- as.numeric(gsub('.+\\)','',xx))
@@ -222,13 +222,13 @@ readform <- function(
   form <- gsub(' ', '', form)
   # And drop coefficients of 1
   form <- gsub('([a-zA-Z])1([a-zA-Z])', '\\1\\2', form)
-  form <- gsub('([a-zA-Z])1$', '\\1\\2', form)
+  form <- gsub('([a-zA-Z])1$', '\\1', form)
   
   # Check for minimum set of elements
   if(!is.null(min.elements)) if(any(!min.elements %in% names(fc)) | any(fc[min.elements] == 0)) stop('Minimum elements required are ', min.elements, ' (from min.elements argument), but form is ', form.orig, ', interpreted as ', form)
 
   if(value == 'numeric') return(fc)
-  if(value == 'shortform') as.vector(form)
+  if(value == 'shortform') return(as.vector(form))
 
 }
 
@@ -248,10 +248,10 @@ molmass <- function(form, elements = NULL) {
     }
 
     # Check for unidentified element
-    if(any(!names(fc) %in% names(atom.weights))) stop('One or more elements in \"form\" is not in the database. You can add it to the \"atom.weights\" vector if you want to modify the function code. Otherwise send a request to sasha.hafner@bce.au.dk.')
+    if(any(!names(fc) %in% names(atomweights))) stop('One or more elements in \"form\" is not in the database.')
 
     # Calculate molar mass, using names of fc for indexing
-    mmass <- c(mmass, sum(atom.weights[names(fc)]*fc))
+    mmass <- c(mmass, sum(atomweights[names(fc)]*fc))
   }
 
   return(mmass)

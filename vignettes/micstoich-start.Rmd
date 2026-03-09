@@ -1,41 +1,77 @@
+---
+title: "Getting started with micstoich"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with micstoich}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(micstoich)
 source('../R/core.R')
+source('../R/halfrxn.R')
 source('../R/constants.R')
+```
 
-micstoich(donor = 'C6H12O6', acceptor = 'O2', order = 'rxn')
+orgrxn('H2')
+orgrxn('CH2')
 
+# Aerobic respiration
+
+```{r}
 # Respiration
 micstoich(donor = 'C6H12O6', acceptor = 'O2')
 # With biomass
 micstoich(donor = 'C6H12O6', acceptor = 'O2', bioform = 'C5H7O2N', fs = 0.1)
-# Methane
+# Methane oxidation
 micstoich(donor = 'CH4', acceptor = 'O2', order = 'rxn')
-Q
-# Methanogenesis
-micstoich(donor = 'C6H12O6', acceptor = 'CO2')
-# Or
-micstoich(donor = 'C6H12O6', prod = 'CH4')
+```
 
+# Methanogenesis
+
+```{r}
+micstoich(donor = 'C6H12O6', acceptor = 'CO2')
+# Or equivalently
+micstoich(donor = 'C6H12O6', product = 'CH4')
+```
+
+# Fermentation
+
+```{r}
 # No acceptor means fermentation
-micstoich(donor = 'C6H12O6', prod = 'CH3COOH')
-micstoich(donor = 'C6H12O6', prod = 'CH3CH2OH')
+micstoich(donor = 'C6H12O6', product = 'CH3COOH')
+micstoich(donor = 'C6H12O6', product = 'CH3CH2OH')
 # With biomass
-micstoich(donor = 'C6H12O6', prod = 'CH3CH2OH', bioform = 'C5H7O2N', fs = 0.1)
+micstoich(donor = 'C6H12O6', product = 'CH3CH2OH', bioform = 'C5H7O2N', fs = 0.1)
 # H2
-micstoich(donor = 'C6H12O6', prod = 'H2')
+micstoich(donor = 'C6H12O6', product = 'H2')
 # Mixed products
-micstoich(donor = 'C6H12O6', prod = 'CH3COOH CH2CH2COH (H2)3')
-micstoich(donor = 'C6H12O6', prod = 'H2', bioform = 'C5H7O2N', fs = 0.1)
+micstoich(donor = 'C6H12O6', product = 'CH3COOH CH2CH2COH (H2)3')
+micstoich(donor = 'C6H12O6', product = 'H2', bioform = 'C5H7O2N', fs = 0.1)
+```
 
 # Mixed reactants
-micstoich(donor = 'CH3COOH H2', acceptor = 'O2')
 
-# In some cases the same donor can produce different products
-# Then the product is needed
-micstoich( donor = 'C6H12O6', acceptor = 'NO3-')
-micstoich( donor = 'C6H12O6', acceptor = 'NO3-', prod = 'N2')
-micstoich( donor = 'C6H12O6', acceptor = 'NO3-', prod = 'NH3')
-micstoich( donor = 'C6H12O6', acceptor = 'NO3-', prod = 'NO2-')
+```{r}
+micstoich(donor = 'CH3COOH H2', acceptor = 'O2')
+```
+
+# Anaerobic respiration with multiple possible products
+
+In some cases the same acceptor can produce different products.
+Use the `product` argument to specify which one.
+
+```{r}
+micstoich(donor = 'C6H12O6', acceptor = 'NO3-')
+micstoich(donor = 'C6H12O6', acceptor = 'NO3-', product = 'N2')
+micstoich(donor = 'C6H12O6', acceptor = 'NO3-', product = 'NH3')
+micstoich(donor = 'C6H12O6', acceptor = 'NO3-', product = 'NO2-')
+```
 
 # Errors
+
+```{r, error = TRUE}
 micstoich(donor = 'C6H12O6')
 micstoich(donor = 'C6H12O6', acceptor = 'Fe')
+```
