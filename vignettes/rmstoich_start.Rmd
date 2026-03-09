@@ -1,8 +1,0 @@
-
-
-```{r}
-ff <- list.files('../R', full.names = TRUE)
-for (i in ff) source(i)
-```
-
-

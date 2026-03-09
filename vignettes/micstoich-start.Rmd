@@ -1,5 +1,5 @@
-source('core.R')
-source('constants.R')
+source('../R/core.R')
+source('../R/constants.R')
 
 # Respiration
 micstoich(donor = 'C6H12O6', acceptor = 'O2')
@@ -35,7 +35,5 @@ micstoich( donor = 'C6H12O6', acceptor = 'NO3-', prod = 'NH3')
 micstoich( donor = 'C6H12O6', acceptor = 'NO3-', prod = 'NO2-')
 
 # Errors
-source('core.R')
-Q
 micstoich(donor = 'C6H12O6')
 micstoich(donor = 'C6H12O6', acceptor = 'Fe')
