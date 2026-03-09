@@ -16,32 +16,35 @@ micstoich <- function(
     stop('acceptor and prod arguments cannot both be missing.')
   }
 
-
   if (bioform %in% donor) {
     stop('The bioform formula is the donor! Change one (change in just order is OK).')
+  }
+
+  if (!is.null(prod)) {
+    acceptor <- paste(acceptor, prod)
   }
 
   # Half reactions 
   # Donor
   rd <- org_stoich(donor, elements = elements)
   # Acceptor
-  if (is.null(prod)) {
+  if (is.null(prod) || !grepl('C', prod)) {
     # Trim half reaction names to length of acceptor
     substr(names(rxn), 1, nchar(acceptor))
     anm <- as.character(lapply(strsplit(names(rxn), ' '), `[[`, 1))
     pnm <- as.character(lapply(strsplit(names(rxn), ' '), `[[`, 2))
     fnm <- names(rxn)
-    if (acceptor %in% anm | acceptor %in% fnm) {
+    if (acceptor %in% anm || acceptor %in% fnm) {
       # If in only one anm, use that
       if (sum(acceptor == anm) == 1) {
         ra <- rxn[[names(rxn)[acceptor == anm]]]
       } else if (sum(acceptor == fnm) == 1) {
         ra <- rxn[[names(rxn)[acceptor == fnm]]]
       } else {
-        stop(paste0('Problem with acceptor argument: Product needed. Choices are:', paste(names(rxn), collapse = ', ')))
+        stop(paste0('prod needed. More than one for this acceptor. Pairs are:', paste(names(rxn), collapse = ', ')))
       }
     } else {
-      stop(paste0('Problem with acceptor argument: Not found. Choices are:', paste(names(rxn), collapse = ', ')))
+      stop(paste0('Problem with acceptor argument: Not found. Extra space? Choices are:', paste(names(rxn), collapse = ', ')))
     }
   } else {
     ra <- org_stoich(prod, elements = elements)
