@@ -1,34 +1,32 @@
 micstoich <- function(
-  donor, 
-  acceptor = NULL, 
-  prod = NULL,
+  donor,
+  acceptor = NULL,
+  product = NULL,
   bioform = 'C5H7O2N',
-  Nsource = 'NH3',
-  fs = 0, 
+  fs = 0,
   elements = c('C', 'H', 'O', 'N'),
-  dropzero = TRUE, 
-  dropsub = FALSE, 
-  order = 'sort', 
+  order = 'rxn',
   tol = 1E-10
 ) {
 
-  if (is.null(acceptor) && is.null(prod)) {
-    stop('acceptor and prod arguments cannot both be missing.')
+  if (is.null(acceptor) && is.null(product)) {
+    stop('acceptor and product arguments cannot both be missing.')
   }
 
   if (bioform %in% donor) {
     stop('The bioform formula is the donor! Change one (change in just order is OK).')
   }
 
-  if (!is.null(prod)) {
-    acceptor <- paste(acceptor, prod)
+  acceptor_orig <- acceptor
+  if (!is.null(product)) {
+    acceptor <- paste(acceptor, product)
   }
 
-  # Half reactions 
+  # Half reactions
   # Donor
   rd <- orgstoich(donor, elements = elements)
   # Acceptor
-  if (is.null(prod) || !grepl('C|H', prod)) {
+  if (is.null(product) || !grepl('C|H', product)) {
     # Trim half reaction names to length of acceptor
     substr(names(rxn), 1, nchar(acceptor))
     anm <- as.character(lapply(strsplit(names(rxn), ' '), `[[`, 1))
@@ -41,13 +39,13 @@ micstoich <- function(
       } else if (sum(acceptor == fnm) == 1) {
         ra <- rxn[[names(rxn)[acceptor == fnm]]]
       } else {
-        stop(paste0('prod needed. More than one for this acceptor. Pairs are:', paste(names(rxn), collapse = ', ')))
+        stop(paste0('product needed. More than one for this acceptor. Pairs are: ', paste(names(rxn), collapse = ', ')))
       }
     } else {
       stop(paste0('Problem with acceptor argument: Not found. Extra space? Choices are: ', paste(names(rxn), collapse = ', ')))
     }
   } else {
-    ra <- orgstoich(prod, elements = elements)
+    ra <- orgstoich(product, elements = elements)
   }
 
   # Synthesis
@@ -74,28 +72,45 @@ micstoich <- function(
   # Combine
   rtot <- fe * ra + fs * rc  - rd
 
-  # Drop substrate if requested
-  if (isTRUE(dropsub)) {
-    # Adjust coefficients to 1 mol substrate
-    rtot <- - rtot / rtot[donor]
-    rtot <- rtot[names(rtot) != donor] 
-  }
+  rtot[abs(rtot) < tol] <- 0
+  rtot <- rtot[rtot != 0]
 
-  rtot[abs(rtot) < tol] <- 0 
-  
-  # Drop empty elements
-  if (dropzero) {
-    rtot <- rtot[rtot != 0]
-  }
+  if (!is.null(order[1]) && !is.na(order[1])) {
+    if (tolower(order[1]) == 'sort') {
+      rtot <- rtot[order(rtot < 0, abs(rtot), decreasing = TRUE)]
+    } else if (tolower(order[1]) == 'rxn') {
+      # First donor and acceptor
+      it <- which(names(rtot) %in% c(donor, acceptor_orig))
+      rord <- rtot[it]
+      rtot <- rtot[-it]
 
-  if (!is.na(order[1]) && tolower(order[1]) == 'sort') {
-    rtot <- rtot[order(rtot < 0, abs(rtot), decreasing = TRUE)]
-  } else if (!is.na(order[1]) && all(sort(order) == sort(names(rtot)))) {
-    rtot <- rtot[order]
-  } else if (inherits(order, 'logical') && isFALSE(order)) {
-    # Skips order
-  } else if (!is.na(order[1])) {
-    warning('order argument ignored')
+      # Then other reactants
+      it <- which(rtot < 0)
+      if (length(it) > 0) {
+        rord <- c(rord, rtot[it])
+        rtot <- rtot[-it]
+      }
+
+      # Then product
+      if (!is.null(product)) {
+        it <- which(names(rtot) == product)
+        rord <- c(rord, rtot[it])
+        rtot <- rtot[-it]
+      }
+
+      # And biomass
+      if (!is.null(bioform) && fs > 0) {
+        it <- which(names(rtot) == bioform)
+        rord <- c(rord, rtot[it])
+        rtot <- rtot[-it]
+      }
+
+      # Then remaining products
+      rtot <- c(rord, rtot)
+
+    } else {
+      warning('order argument ignored. Options are: "sort", "rxn".')
+    }
   }
 
   return(rtot)
