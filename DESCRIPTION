@@ -1,0 +1,15 @@
+Package: micstoich
+Title: Microbial Stoichiometry Calculations
+Version: 0.1.0
+Authors@R:
+    person("Sasha", "Hafner", email = "sasha.hafner@bce.au.dk", role = c("aut", "cre"))
+Description: Calculates stoichiometry of microbial reactions using the
+    half-reaction approach from Rittmann and McCarty (2001). Supports aerobic
+    respiration, anaerobic respiration, and fermentation with user-specified
+    electron donor, acceptor, and synthesis fraction.
+License: GPL (>= 3)
+Encoding: UTF-8
+Suggests:
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

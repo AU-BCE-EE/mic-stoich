@@ -1,13 +1,15 @@
 source('../R/core.R')
 source('../R/constants.R')
 
+micstoich(donor = 'C6H12O6', acceptor = 'O2', order = 'rxn')
+
 # Respiration
 micstoich(donor = 'C6H12O6', acceptor = 'O2')
 # With biomass
 micstoich(donor = 'C6H12O6', acceptor = 'O2', bioform = 'C5H7O2N', fs = 0.1)
 # Methane
-micstoich(donor = 'CH4', acceptor = 'O2')
-
+micstoich(donor = 'CH4', acceptor = 'O2', order = 'rxn')
+Q
 # Methanogenesis
 micstoich(donor = 'C6H12O6', acceptor = 'CO2')
 # Or
