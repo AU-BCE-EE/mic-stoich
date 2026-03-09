@@ -2,34 +2,32 @@
 \alias{micstoich}
 \title{Microbial reaction stoichiometry}
 \description{
-  Calculates stoichiometry of a microbial reaction using the half-reaction
-  approach of Rittmann and McCarty (2001). Combines electron donor, acceptor,
+  Determines stoichiometry of a microbial reaction using the half-reaction
+  approach of Rittmann and McCarty (2001, 2020). Combines electron donor, acceptor,
   and biomass synthesis half-reactions weighted by the synthesis fraction
-  \code{fs}.
+  \code{fs}. 
 }
 \usage{
 micstoich(donor, acceptor = NULL, product = NULL,
           bioform = "C5H7O2N", fs = 0,
-          elements = c("C", "H", "O", "N"),
           order = "rxn", tol = 1e-10)
 }
 \arguments{
   \item{donor}{Chemical formula of the electron donor as a character string,
-    e.g., \code{"C6H12O6"}. For mixed donors, provide a single
-    space-separated string, e.g., \code{"CH3COOH H2"}.}
+    e.g., \code{"C6H12O6"} for glucose. Can handle decimal coefficients
+    (e.g., for empirical formulas) and mixed donors. Only C, H, O, and N are
+    tracked; other elements in the formula are ignored.}
   \item{acceptor}{Chemical formula of the electron acceptor. For inorganic
     acceptors (O2, NO3-, SO4-2, CO2), use the built-in half-reactions by
-    passing the acceptor formula alone, e.g., \code{"O2"} or \code{"NO3-"}.
-    Can be \code{NULL} for fermentation (requires \code{product}).}
+    passing the acceptor formula, e.g., \code{"O2"} or \code{"NO3-"}.
+    Omit for fermentation and provide \code{product} instead.}
   \item{product}{Chemical formula of the primary reaction product. Required
     for fermentation (no acceptor) or when an acceptor has multiple possible
     products (e.g., NO3- can yield N2, NH3, or NO2-). Also accepts a
-    space-separated string for multiple products.}
-  \item{bioform}{Chemical formula of the biomass, default \code{"C5H7O2N"}.}
+    space-separated string for multiple fermentation products.}
+  \item{bioform}{Chemical formula of cell biomass, default \code{"C5H7O2N"}.}
   \item{fs}{Fraction of electrons directed to biomass synthesis (0 to 1),
     default \code{0} (no synthesis). The energy fraction is \code{fe = 1 - fs}.}
-  \item{elements}{Character vector of elements to track in the output,
-    default \code{c("C", "H", "O", "N")}.}
   \item{order}{Controls ordering of compounds in the output vector.
     \code{"rxn"} (default) orders as reactants then products, with donor and
     acceptor first among reactants and \code{product} and \code{bioform} first

@@ -4,7 +4,6 @@ micstoich <- function(
   product = NULL,
   bioform = 'C5H7O2N',
   fs = 0,
-  elements = c('C', 'H', 'O', 'N'),
   order = 'rxn',
   tol = 1E-10
 ) {
@@ -24,7 +23,7 @@ micstoich <- function(
 
   # Half reactions
   # Donor
-  rd <- orgrxn(donor, elements = elements)
+  rd <- orgrxn(donor)
   # Acceptor
   if (is.null(product) || !grepl('C|H', product)) {
     # Trim half reaction names to length of acceptor
@@ -45,11 +44,11 @@ micstoich <- function(
       stop(paste0('Problem with acceptor argument: Not found. Extra space? Choices are: ', paste(names(halfrxn), collapse = ', ')))
     }
   } else {
-    ra <- orgrxn(product, elements = elements)
+    ra <- orgrxn(product)
   }
 
   # Synthesis
-  rc <- orgrxn(bioform, elements = elements)
+  rc <- orgrxn(bioform)
 
   # N source adjustment
   # NTS: need to figure out!
@@ -113,18 +112,16 @@ micstoich <- function(
     }
   }
 
+  rxnbal(rtot, tol = tol)
+
   return(rtot)
 
 }
 
 # Function to get stoichiometry for custom organic reaction (O-19)
-orgrxn <- function(
-  form, 
-  elements =  c('C', 'H', 'O', 'N'),
-  dover = FALSE
-  ) {
-  
-  fc <- readform(form, elements)
+orgrxn <- function(form, dover = FALSE) {
+
+  fc <- readform(form, elements = c('C', 'H', 'O', 'N'))
 
   # Use symbols from O-19 in R&M
   n <- as.numeric(fc['C'])
@@ -166,6 +163,9 @@ readform <- function(
 
   # Remove spaces
   form <- gsub(' ', '', form)
+
+  # Remove charges
+  form <- gsub('[+-][0-9]*', '', form)
 
   # Add implied coefficients of 1 (also after ")")
   form <- gsub('([a-zA-Z\\)])([A-Z\\)\\(])', '\\11\\2', form)
@@ -302,5 +302,24 @@ massconv <- function(form) {
   }
 
   return(cf)
+
+}
+
+rxnbal <- function(rxn, tol = 1E-10) {
+
+  ele <- readform(paste0(names(rxn), collapse = ''))
+  bal <- 0 * ele
+  
+  for (i in names(rxn)) {
+    ff <- readform(i)
+    bal[names(ff)] <- bal[names(ff)] + rxn[i] * ff 
+  }
+
+  if (max(abs(bal)) > tol) {
+    warning(paste0('Elemental balance is off in reaction: ', paste(paste(signif(rxn, 3), names(rxn)), collapse = ', '), '.'))
+    return(bal)
+  } else {
+    return(invisible(TRUE))
+  }
 
 }

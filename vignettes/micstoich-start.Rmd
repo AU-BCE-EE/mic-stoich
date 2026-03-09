@@ -14,19 +14,35 @@ source('../R/halfrxn.R')
 source('../R/constants.R')
 ```
 
-orgrxn('H2')
-orgrxn('CH2')
-
 # Aerobic respiration
 
 ```{r}
 # Respiration
 micstoich(donor = 'C6H12O6', acceptor = 'O2')
+micstoich(donor = 'C6H12O6', acceptor = 'SO4-2')
+debug(rxnbal)
+micstoich(donor = 'C6H12O6S', acceptor = 'SO4-2')
 # With biomass
+Q
 micstoich(donor = 'C6H12O6', acceptor = 'O2', bioform = 'C5H7O2N', fs = 0.1)
 # Methane oxidation
 micstoich(donor = 'CH4', acceptor = 'O2', order = 'rxn')
 ```
+
+Check any reaction for balance.
+
+```{r}
+r1 <- micstoich(donor = 'C6H12O6', acceptor = 'O2', bioform = 'C5H7O2N', fs = 0.1)
+r1
+rxnbal(r1)
+isTRUE(rxnbal(r1))
+```
+
+```{r, error = TRUE}
+r2 <- c(C6H12O6 = -1, CO2 = 1, CH4 = 1)
+rxnbal(r2)
+```
+
 
 # Methanogenesis
 
@@ -74,4 +90,5 @@ micstoich(donor = 'C6H12O6', acceptor = 'NO3-', product = 'NO2-')
 ```{r, error = TRUE}
 micstoich(donor = 'C6H12O6')
 micstoich(donor = 'C6H12O6', acceptor = 'Fe')
+micstoich(donor = 'C100P', acceptor = 'O2')
 ```

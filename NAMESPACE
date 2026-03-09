@@ -1,3 +1,4 @@
 export(micstoich)
 export(molmass)
 export(calcCOD)
+export(rxnbal)
