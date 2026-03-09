@@ -3,13 +3,18 @@ micstoich <- function(
   acceptor = NULL, 
   prod = NULL,
   bioform = 'C5H7O2N',
-  fs, 
+  Nsource = 'NH3',
+  fs = 0, 
   elements = c('C', 'H', 'O', 'N'),
   dropzero = TRUE, 
   dropsub = FALSE, 
-  order = FALSE, 
+  order = 'sort', 
   tol = 1E-10
 ) {
+
+  if (is.null(acceptor) && is.null(prod)) {
+    stop('acceptor and prod arguments cannot both be missing.')
+  }
 
 
   if (bioform %in% donor) {
@@ -21,17 +26,34 @@ micstoich <- function(
   rd <- org_stoich(donor, elements = elements)
   # Acceptor
   if (is.null(prod)) {
-    if (acceptor %in% names(accept_stoich)) {
-      ra <- accept_stoich[[acceptor]]
+    # Trim half reaction names to length of acceptor
+    substr(names(rxn), 1, nchar(acceptor))
+    anm <- as.character(lapply(strsplit(names(rxn), ' '), `[[`, 1))
+    pnm <- as.character(lapply(strsplit(names(rxn), ' '), `[[`, 2))
+    fnm <- names(rxn)
+    if (acceptor %in% anm | acceptor %in% fnm) {
+      # If in only one anm, use that
+      if (sum(acceptor == anm) == 1) {
+        ra <- rxn[[names(rxn)[acceptor == anm]]]
+      } else if (sum(acceptor == fnm) == 1) {
+        ra <- rxn[[names(rxn)[acceptor == fnm]]]
+      } else {
+        stop(paste0('Problem with acceptor argument: Product needed. Choices are:', paste(names(rxn), collapse = ', ')))
+      }
     } else {
-      stop('acceptor not found.')
+      stop(paste0('Problem with acceptor argument: Not found. Choices are:', paste(names(rxn), collapse = ', ')))
     }
   } else {
     ra <- org_stoich(prod, elements = elements)
   }
+
   # Synthesis
   rc <- org_stoich(bioform, elements = elements)
 
+  # N source adjustment
+  # NTS: need to figure out!
+
+  # Align
   ii <- unique(names(c(rd, rc, ra)))
 
   # Blanks
@@ -153,8 +175,8 @@ org_stoich <- function(
   }
   
   # Put together
-  #rr <- c(CO2 = - (n - cc) / d, NH4. = - cc / d, HCO3. = - cc / d, H. = -1, H2O = (2*n - b + cc) /d)
-  rr <- c(CO2 = - n / d, NH3 = - cc / d, `H+` = H.c, H2O = (2*n - b) / d)
+  rr <- c(CO2 = - (n - cc)/d, `NH4+` = -cc/d, `HCO3-` = -cc/d, `H+` = H.c, H2O = (2*n - b + cc)/d)
+  #rr <- c(CO2 = - n / d, NH3 = - cc / d, `H+` = H.c, H2O = (2*n - b) / d)
   rr[form] <-  1/d
 
   return(rr)
