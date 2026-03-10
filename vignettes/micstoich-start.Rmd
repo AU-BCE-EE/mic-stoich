@@ -9,7 +9,6 @@ vignette: >
 
 ```{r setup, include = FALSE}
 library(micstoich)
-devtools::load_all()
 ```
 
 # Some simple examples
@@ -54,8 +53,8 @@ Here is an example that is not balanced.
 rxnbal(c(CH3COOH = -2, CH4 = 1, CO2 = 1))
 ```
 
-We get a warning plus the overall balance, which shows 2 more moles of C and O and 4 of H on the product side than reactant side (see negative values).
-
+We get a warning plus the overall balance, which shows 2 more moles of C and O and 4 of H on the reactant side than product side.
+This is indicated by the negative values.
 
 # Other electron acceptors
 
@@ -68,7 +67,7 @@ micstoich(donor = 'CH3COOH', acceptor = 'NO3-')
 ```
 
 Here we see we need to specify a product as well, because there are multiple possibilities.
-We can find the one we want in the error message, where they are listed in `acceptor donor` pairs: `'NO3- N2'`.
+We can find the one we want in the error message, where they are listed in `acceptor product` pairs: `'NO3- N2'`.
 Or more easily, view them all with the `halfrxns()` function.
 
 ```{r} 
@@ -77,7 +76,7 @@ halfrxns()
 
 The one we want is in the third row.
 
-```{r,error=TRUE}
+```{r}
 micstoich(donor = 'CH3COOH', acceptor = 'NO3-', product = 'N2')
 ```
 
@@ -104,6 +103,7 @@ rxnbal(r3)
 ```
 
 The problem is extra S on the reactant side, in the substrate of course.
+The negative sign in the results indicates that we have excess reactants, not products.
 To use the package as intended, don't include S in the substrate!
 
 ```{r}
@@ -143,9 +143,9 @@ We could use some of the other ordering options to align them.
 The calls below demonstrate this, and have some cell biomass added to make the effects more clear.
 
 ```{r}
-micstoich(donor = 'H2', acceptor = 'CO2', fs = 0.1, order = 'decreasing')
-micstoich(donor = 'H2', acceptor = 'CO2', fs = 0.1, order = 'increasing')
-micstoich(donor = 'H2', acceptor = 'CO2', fs = 0.1, order = 'alphanum')
+micstoich(donor = 'H2', acceptor = 'CO2', fs = 0.1, arrange = 'decreasing')
+micstoich(donor = 'H2', acceptor = 'CO2', fs = 0.1, arrange = 'increasing')
+micstoich(donor = 'H2', acceptor = 'CO2', fs = 0.1, arrange = 'alphanum')
 ```
 
 All options list reactants first and products later.
@@ -182,7 +182,7 @@ Of course, we have been ignoring cell biomass, but it could be added.
 micstoich(donor = 'C6H12O6', product = 'H2', fs = 0.2)
 ```
 
-For mixed fermenations, just combine the products into one formula.
+For mixed fermentations, just combine the products into one formula.
 This example follows example 5.6 in Rittmann and McCarty (2020): fermentation of citrate to formate and acetate in a 1:2 molar ratio.
 We need uncharged substrates, so will use citric acid.
 
@@ -225,6 +225,27 @@ molmass('X')
 calcCOD('X')
 ```
 
+The next error is related to how all compounds are identified internally--simply by the character strings provided by formulas (or calculated).
+
+```{r, error = TRUE}
+micstoich(donor = 'C5H6O2N', product = 'C5H6O2N')
+micstoich(donor = 'C5H7O2N', acceptor = 'O2', bioform = 'C5H7O2N', fs = 0.2)
+```
+
+They can be fixed by simply changing element order,
+
+```{r}
+micstoich(donor = 'C5H6O2N', product = 'H6C5O2N')
+micstoich(donor = 'H7C5O2N', acceptor = 'O2', bioform = 'C5H7O2N', fs = 0.2)
+```
+
+or even just adding a space.
+
+```{r}
+micstoich(donor = 'C5 H6O2N', product = 'C5H6O2N')
+micstoich(donor = 'C5 H7O2N', acceptor = 'O2', bioform = 'C5H7O2N', fs = 0.2)
+```
+
 # Molar mass and COD'
 
 For convenience, the package includes a function for calculating molar mass and "calculated" or "theoretical" chemical oxygen demand, COD'.
@@ -265,4 +286,12 @@ calcCOD('NaCl')
 ```
 
 # More information
-For more on the micstoich package, see <>.
+For more on the micstoich package, see <https://github.com/AU-BCE-EE/micstoich>.
+
+# References
+Rittmann, B.E. and McCarty, P.L. (2001) *Environmental Biotechnology:
+Principles and Applications*. McGraw-Hill, New York.
+
+Rittmann, B.E. and McCarty, P.L. (2020) *Environmental Biotechnology:
+Principles and Applications*. 2nd ed. McGraw-Hill, New York.
+

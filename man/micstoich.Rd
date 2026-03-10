@@ -10,7 +10,7 @@
 \usage{
 micstoich(donor, acceptor = NULL, product = NULL,
           bioform = "C5H7O2N", fs = 0,
-          order = "rxn", tol = 1e-10)
+          arrange = "norm", tol = 1e-10)
 }
 \arguments{
   \item{donor}{Chemical formula of the electron donor as a character string,
@@ -27,12 +27,14 @@ micstoich(donor, acceptor = NULL, product = NULL,
   \item{bioform}{Chemical formula of cell biomass, default \code{"C5H7O2N"}.}
   \item{fs}{Fraction of electrons directed to biomass synthesis (0 to 1),
     default \code{0} (no synthesis). The energy fraction is \code{fe = 1 - fs}.}
-  \item{order}{Controls ordering of compounds in the output vector.
-    \code{"rxn"} (default) orders as reactants then products, with \code{donor} and
+  \item{arrange}{Controls ordering of compounds in the output vector.
+    \code{"norm"} (default) orders as reactants then products, with \code{donor} and
     \code{acceptor} (if any) first among reactants and \code{product} and \code{bioform} first
-    among products. \code{"sort"} sorts by descending absolute coefficient,
-    reactants first. \code{NULL} or \code{NA} returns compounds in order they
-    are returned by internal functions.}
+    among products. \code{"decreasing"} sorts by descending absolute coefficient,
+    reactants first. \code{"increasing"} sorts by ascending absolute coefficient,
+    reactants first. \code{"alphanum"} sorts alphanumerically, reactants first.
+    \code{NULL} or \code{NA} returns compounds in order they are returned by
+    internal functions.}
   \item{tol}{Numerical tolerance: coefficients with absolute value below
     \code{tol} are set to zero and dropped from the output. Default
     \code{1e-10}.}

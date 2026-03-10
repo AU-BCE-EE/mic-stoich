@@ -1,4 +1,4 @@
-# mic-stoich
+# micstoich
 Microbial stoichiometry following Rittmann and McCarty's "Environmental Biotechnology"
 
 # Maintainer

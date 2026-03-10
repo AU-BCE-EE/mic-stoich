@@ -7,6 +7,8 @@ Description: Calculates stoichiometry of microbial reactions using the
     half-reaction approach from Rittmann and McCarty (2001). Supports aerobic
     respiration, anaerobic respiration, and fermentation with user-specified
     electron donor, acceptor, and synthesis fraction.
+URL: https://github.com/AU-BCE-EE/micstoich
+BugReports: https://github.com/AU-BCE-EE/micstoich/issues
 License: GPL (>= 3)
 Encoding: UTF-8
 Suggests:

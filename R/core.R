@@ -4,7 +4,7 @@ micstoich <- function(
   product = NULL,
   bioform = 'C5H7O2N',
   fs = 0,
-  order = 'norm',
+  arrange = 'norm',
   tol = 1E-10
 ) {
 
@@ -13,7 +13,11 @@ micstoich <- function(
   }
 
   if (bioform %in% donor) {
-    stop('The bioform formula is the donor! Change one (change in just order is OK).')
+    stop('The bioform formula is the donor! Change one (change in element order is OK).')
+  }
+
+  if (any(duplicated(c(donor, acceptor, product, bioform)))) {
+    stop('There are duplicates in input formulas (donor, acceptor, product, or bioform)! Change at least one (change in element order is OK)')
   }
 
   acceptor_orig <- acceptor
@@ -71,14 +75,14 @@ micstoich <- function(
   rtot[abs(rtot) < tol] <- 0
   rtot <- rtot[rtot != 0]
 
-  if (!is.null(order[1]) && !is.na(order[1])) {
-    if (tolower(order[1]) == 'decreasing') {
+  if (!is.null(arrange[1]) && !is.na(arrange[1])) {
+    if (tolower(arrange[1]) == 'decreasing') {
       rtot <- rtot[order(rtot < 0, abs(rtot), decreasing = TRUE)]
-    } else if (tolower(order[1]) == 'increasing') {
+    } else if (tolower(arrange[1]) == 'increasing') {
       rtot <- rtot[order(-rtot < 0, abs(rtot), decreasing = FALSE)]
-    } else if (tolower(order[1]) == 'alphanum') {
+    } else if (tolower(arrange[1]) == 'alphanum') {
       rtot <- rtot[order(-rtot < 0, names(rtot), decreasing = FALSE)]
-    } else if (tolower(order[1]) == 'norm') {
+    } else if (tolower(arrange[1]) == 'norm') {
       # First donor
       it <- which(names(rtot) == donor)
       rord <- rtot[it]
@@ -116,7 +120,7 @@ micstoich <- function(
       rtot <- c(rord, rtot)
 
     } else {
-      warning('order argument ignored. Options are: "sort", "rxn".')
+      warning('arrange argument ignored. Options are: "norm", "decreasing", "increasing", "alphanum".')
     }
   }
 
