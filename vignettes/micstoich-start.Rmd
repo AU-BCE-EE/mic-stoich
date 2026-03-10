@@ -9,9 +9,7 @@ vignette: >
 
 ```{r setup, include = FALSE}
 library(micstoich)
-source('../R/core.R')
-source('../R/halfrxn.R')
-source('../R/constants.R')
+devtools::load_all()
 ```
 
 # Some simple examples
@@ -26,7 +24,7 @@ Reactants have negative values and products positive.
 The compounds themselves are given in the element names.
 
 There is no biomass production in that example.
-We can add it by providing a value for `fs`, perhaps 0.5.
+We can add it by providing a value for `fs`, perhaps 0.5 for this aerobic reaction.
 
 ```{r}
 micstoich(donor = 'C6H12O6', acceptor = 'O2', fs = 0.5)
@@ -34,18 +32,30 @@ micstoich(donor = 'C6H12O6', acceptor = 'O2', fs = 0.5)
 
 The default biomass composition is `C5H7O2N`, but it can be changed with `bioform`.
 
-Is it really balanced?
-We can check the output or any reaction with `rxnbal()`.
+Is that reaction really balanced?
+It *should* be, but we can check it or any reaction with `rxnbal()`.
 
 
 ```{r}
 r1 <- micstoich(donor = 'C6H12O6', acceptor = 'O2', fs = 0.5)
 r1
 rxnbal(r1)
-isTRUE(rxnbal(r1))
 ```
 
 It returns `TRUE` invisibly if everything is OK.
+
+```{r}
+isTRUE(rxnbal(r1))
+```
+
+Here is an example that is not balanced.
+
+```{r}
+rxnbal(c(CH3COOH = -2, CH4 = 1, CO2 = 1))
+```
+
+We get a warning plus the overall balance, which shows 2 more moles of C and O and 4 of H on the product side than reactant side (see negative values).
+
 
 # Other electron acceptors
 
@@ -58,13 +68,14 @@ micstoich(donor = 'CH3COOH', acceptor = 'NO3-')
 ```
 
 Here we see we need to specify a product as well, because there are multiple possibilities.
-We can find the one we want (`'NO3- N2'`) in the error message, or more easily, view them all with the `halfrxns()` function.
+We can find the one we want in the error message, where they are listed in `acceptor donor` pairs: `'NO3- N2'`.
+Or more easily, view them all with the `halfrxns()` function.
 
 ```{r} 
 halfrxns()
 ```
 
-Indeed, the one we want is in the third row.
+The one we want is in the third row.
 
 ```{r,error=TRUE}
 micstoich(donor = 'CH3COOH', acceptor = 'NO3-', product = 'N2')
@@ -76,15 +87,38 @@ How about sulfate?
 micstoich(donor = 'CH3COOH', acceptor = 'SO4-2', product = 'H2S')
 ```
 
+But note that the package ignores elements other than C, H, O, and N in organic compounds, following Rittmann and McCarty (2001, 2020).
+For example, if we have some empirical waste biomass formula like this one (spaces added for reading clarity, and could be removed),
+
+```{r}
+micstoich(donor = 'C226.36 H404.24 O187.69 N1 S0.52', acceptor = 'SO4-2', product = 'H2S')
+```
+
+we get an overall reaction, but it is not balanced.
+And where is the problem?
+We can check.
+
+```{r}
+r3 <- micstoich(donor = 'C226.36 H404.24 O187.69 N1 S0.52', acceptor = 'SO4-2', product = 'H2S')
+rxnbal(r3)
+```
+
+The problem is extra S on the reactant side, in the substrate of course.
+To use the package as intended, don't include S in the substrate!
+
+```{r}
+micstoich(donor = 'C226.36 H404.24 O187.69 N1', acceptor = 'SO4-2', product = 'H2S')
+```
+
 # Methanogenesis
 
-Either use CO2 as the acceptor, but don't specify a product.
+Either use CO2 as the acceptor, but don't specify a product,
 
 ```{r}
 micstoich(donor = 'CH3COOH', acceptor = 'CO2')
 ```
 
-Or specify the product.
+or specify the product, like this,
 
 ```{r}
 micstoich(donor = 'CH3COOH', product = 'CH4')
@@ -95,6 +129,26 @@ Or both.
 ```{r}
 micstoich(donor = 'CH3COOH', acceptor = 'CO2', product = 'CH4')
 ```
+
+Hydrogenotrophic methanogenesis has similar flexibility.
+
+```{r}
+micstoich(donor = 'H2', acceptor = 'CO2')
+micstoich(donor = 'H2', product = 'CH4')
+micstoich(donor = 'H2', acceptor = 'CO2', product = 'CH4')
+```
+
+The different calls do result in different element order in the output.
+We could use some of the other ordering options to align them.
+The calls below demonstrate this, and have some cell biomass added to make the effects more clear.
+
+```{r}
+micstoich(donor = 'H2', acceptor = 'CO2', fs = 0.1, order = 'decreasing')
+micstoich(donor = 'H2', acceptor = 'CO2', fs = 0.1, order = 'increasing')
+micstoich(donor = 'H2', acceptor = 'CO2', fs = 0.1, order = 'alphanum')
+```
+
+All options list reactants first and products later.
 
 # Fermentation
 
@@ -112,9 +166,10 @@ Or to ethanol.
 micstoich(donor = 'C6H12O6', product = 'CH3CH2OH')
 ```
 
+Here we get carbon dioxide too.
 This is why bread rises.
 
-For production of only H2, use these approaches.
+For production of only H2, use one of these approaches.
 
 ```{r}
 micstoich(donor = 'C6H12O6', acceptor = 'H+')
@@ -141,46 +196,73 @@ Mixed substrates follow the mixed product example.
 For example, a mix of lactose and protein (skim milk?) fermented to a mix of lactic and acetic acids plus hydrogen:
 
 ```{r}
-micstoich(donor = '(C12H22O11)2 (C5H7O2N)3', product = '(C3H6O3)3 CH3COOH (H2)5')
+micstoich(donor = '(C12H22O11)5 (C5H7O2N)', product = '(C3H6O3)3 CH3COOH (H2)5')
 ```
 
+The mixed donor and product are no problem, but we have to manually separate the results.
 
+# Errors in `micstoich()`
 
-
-# With biomass
-micstoich(donor = 'C6H12O6', product = 'CH3CH2OH', bioform = 'C5H7O2N', fs = 0.1)
-# H2
-micstoich(donor = 'C6H12O6', acceptor = 'H+')
-# Mixed products
-micstoich(donor = 'C6H12O6', product = 'CH3COOH CH2CH2COH (H2)3')
-micstoich(donor = 'C6H12O6', product = 'H2', bioform = 'C5H7O2N', fs = 0.1)
-```
-
-# Mixed reactants
-
-```{r}
-micstoich(donor = 'CH3COOH H2', acceptor = 'O2')
-```
-
-# Anaerobic respiration with multiple possible products
-
-In some cases the same acceptor can produce different products.
-Use the `product` argument to specify which one.
-
-```{r}
-micstoich(donor = 'C6H12O6', acceptor = 'NO3-')
-micstoich(donor = 'C6H12O6', acceptor = 'NO3-', product = 'N2')
-micstoich(donor = 'C6H12O6', acceptor = 'NO3-', product = 'NH3')
-micstoich(donor = 'C6H12O6', acceptor = 'NO3-', product = 'NO2-')
-```
-
-# Errors
+The following calls are missing something, and the error messages are meant to explain the problem.
 
 ```{r, error = TRUE}
 micstoich(donor = 'C6H12O6')
 micstoich(donor = 'C6H12O6', acceptor = 'Fe')
 micstoich(donor = 'C100P', acceptor = 'O2')
-orgrxn('HCOOH') * .111
-orgrxn('CH3COOH') * .889
-orgrxn('HCOOH (CH3COOH)2')
 ```
+
+Presently mistakes in element names can give confusing errors.
+
+```{r, error = TRUE}
+micstoich(donor = 'X', acceptor = 'O2')
+```
+
+A good way to proceed in case of a strange error message is to try the lower-level functions described below.
+For example:
+
+```{r, error = TRUE}
+molmass('X')
+calcCOD('X')
+```
+
+# Molar mass and COD'
+
+For convenience, the package includes a function for calculating molar mass and "calculated" or "theoretical" chemical oxygen demand, COD'.
+These are closely related to the functions with similar names in the biogas package.
+Any of the chemical formulas used above work here.
+
+```{r}
+molmass('C6H12O6')
+molmass('C226.36 H404.24 O187.69 N1 S0.52')
+```
+
+And so do others.
+
+```{r}
+molmass('S')
+molmass('NaCl')
+molmass('XePtF6')
+```
+
+COD' is returned as g oxygen per g of the given compound by default.
+
+```{r}
+calcCOD('C6H12O6')
+calcCOD('C226.36 H404.24 O187.69 N1 S0.52')
+```
+
+But this could be changed to per mole.
+
+```{r}
+calcCOD('C6H12O6', per = 'mol')
+calcCOD('C226.36 H404.24 O187.69 N1 S0.52', per = 'mol')
+```
+
+As expected, COD' will be zero for inorganic compounds.
+
+```{r}
+calcCOD('NaCl')
+```
+
+# More information
+For more on the micstoich package, see <>.
