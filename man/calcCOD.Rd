@@ -1,8 +1,8 @@
 \name{calcCOD}
 \alias{calcCOD}
-\title{Chemical oxygen demand of a compound}
+\title{Calculated chemical oxygen demand of a compound}
 \description{
-  Calculates the theoretical chemical oxygen demand (COD) of a compound from
+  Calculates the chemical oxygen demand (COD) of a compound from
   its chemical formula, using the approach of Rittmann and McCarty (2001).
 }
 \usage{
@@ -15,8 +15,9 @@ calcCOD(form, per = "g")
 }
 \details{
   Similar to \code{biogas::calcCOD()} but also supports mole-based output
-  via the \code{per} argument. Note that \code{biogas::calcCOD()} returns
-  g O2 per g compound; the default here is the same.
+  via the \code{per} argument. \code{biogas::calcCOD()} returns
+  g O2 per g compound and the default here is the same. Based on Eq. (5.2) in
+  Rittmann and McCarty (2020).
 }
 \value{
   Numeric value of COD in the units specified by \code{per}.
@@ -27,6 +28,9 @@ calcCOD(form, per = "g")
 \references{
   Rittmann, B.E. and McCarty, P.L. (2001) \emph{Environmental Biotechnology:
   Principles and Applications}. McGraw-Hill, New York.
+
+  Rittmann, B.E. and McCarty, P.L. (2020) \emph{Environmental Biotechnology:
+  Principles and Applications}. 2nd ed. McGraw-Hill, New York.
 }
 \examples{
 # g O2 per g glucose
@@ -36,5 +40,8 @@ calcCOD("C6H12O6")
 calcCOD("C6H12O6", per = "mol")
 
 # g O2 per g methane
+calcCOD("CH4")
+
+# Emprical formula for cattle manure organic matter
 calcCOD("CH4")
 }
