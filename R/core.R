@@ -298,7 +298,7 @@ massconv <- function(form) {
   # Remove p and m (+/-)
   form <- gsub('p$|m$', '', form)
   
-  cod <- calcCOD(form)
+  cod <- calcCOD(form, per = 'mol')
   fn <- readform(form)
   
   if (cod > 0) {
