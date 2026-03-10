@@ -4,7 +4,7 @@ micstoich <- function(
   product = NULL,
   bioform = 'C5H7O2N',
   fs = 0,
-  order = 'rxn',
+  order = 'norm',
   tol = 1E-10
 ) {
 
@@ -72,13 +72,24 @@ micstoich <- function(
   rtot <- rtot[rtot != 0]
 
   if (!is.null(order[1]) && !is.na(order[1])) {
-    if (tolower(order[1]) == 'sort') {
+    if (tolower(order[1]) == 'decreasing') {
       rtot <- rtot[order(rtot < 0, abs(rtot), decreasing = TRUE)]
-    } else if (tolower(order[1]) == 'rxn') {
-      # First donor and acceptor
-      it <- which(names(rtot) %in% c(donor, acceptor_orig))
+    } else if (tolower(order[1]) == 'increasing') {
+      rtot <- rtot[order(-rtot < 0, abs(rtot), decreasing = FALSE)]
+    } else if (tolower(order[1]) == 'alphanum') {
+      rtot <- rtot[order(-rtot < 0, names(rtot), decreasing = FALSE)]
+    } else if (tolower(order[1]) == 'norm') {
+      # First donor
+      it <- which(names(rtot) == donor)
       rord <- rtot[it]
       rtot <- rtot[-it]
+
+      # Acceptor
+      it <- which(names(rtot) == acceptor_orig)
+      if (length(it) > 0) {
+        rord <- c(rord, rtot[it])
+        rtot <- rtot[-it]
+      }
 
       # Then other reactants
       it <- which(rtot < 0)
@@ -313,6 +324,7 @@ rxnbal <- function(rxn, tol = 1E-10) {
   }
 
   if (max(abs(bal)) > tol) {
+    bal[abs(bal) < tol] <- 0
     warning(paste0('Elemental balance is off in reaction: ', paste(paste(signif(rxn, 3), names(rxn)), collapse = ', '), '.'))
     return(bal)
   } else {
