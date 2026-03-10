@@ -25,7 +25,7 @@ micstoich <- function(
   # Donor
   rd <- orgrxn(donor)
   # Acceptor
-  if (is.null(product) || !grepl('C|H', product)) {
+  if (is.null(product) || (!grepl('C', product) && product != 'H2')) {
     # Trim half reaction names to length of acceptor
     substr(names(halfrxn), 1, nchar(acceptor))
     anm <- as.character(lapply(strsplit(names(halfrxn), ' '), `[[`, 1))
@@ -49,9 +49,6 @@ micstoich <- function(
 
   # Synthesis
   rc <- orgrxn(bioform)
-
-  # N source adjustment
-  # NTS: need to figure out!
 
   # Align
   ii <- unique(names(c(rd, rc, ra)))

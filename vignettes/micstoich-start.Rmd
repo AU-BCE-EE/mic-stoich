@@ -14,54 +14,143 @@ source('../R/halfrxn.R')
 source('../R/constants.R')
 ```
 
-# Aerobic respiration
+# Some simple examples
+
+Let's use glucose oxidation as an example.
 
 ```{r}
-# Respiration
 micstoich(donor = 'C6H12O6', acceptor = 'O2')
-micstoich(donor = 'C6H12O6', acceptor = 'SO4-2')
-debug(rxnbal)
-micstoich(donor = 'C6H12O6S', acceptor = 'SO4-2')
-# With biomass
-Q
-micstoich(donor = 'C6H12O6', acceptor = 'O2', bioform = 'C5H7O2N', fs = 0.1)
-# Methane oxidation
-micstoich(donor = 'CH4', acceptor = 'O2', order = 'rxn')
 ```
 
-Check any reaction for balance.
+Reactants have negative values and products positive.
+The compounds themselves are given in the element names.
+
+There is no biomass production in that example.
+We can add it by providing a value for `fs`, perhaps 0.5.
 
 ```{r}
-r1 <- micstoich(donor = 'C6H12O6', acceptor = 'O2', bioform = 'C5H7O2N', fs = 0.1)
+micstoich(donor = 'C6H12O6', acceptor = 'O2', fs = 0.5)
+```
+
+The default biomass composition is `C5H7O2N`, but it can be changed with `bioform`.
+
+Is it really balanced?
+We can check the output or any reaction with `rxnbal()`.
+
+
+```{r}
+r1 <- micstoich(donor = 'C6H12O6', acceptor = 'O2', fs = 0.5)
 r1
 rxnbal(r1)
 isTRUE(rxnbal(r1))
 ```
 
-```{r, error = TRUE}
-r2 <- c(C6H12O6 = -1, CO2 = 1, CH4 = 1)
-rxnbal(r2)
+It returns `TRUE` invisibly if everything is OK.
+
+# Other electron acceptors
+
+Let's use acetic acid as a donor with some other acceptors.
+
+First nitrate for complete denitrification to N2.
+
+```{r,error=TRUE}
+micstoich(donor = 'CH3COOH', acceptor = 'NO3-')
 ```
 
+Here we see we need to specify a product as well, because there are multiple possibilities.
+We can find the one we want (`'NO3- N2'`) in the error message, or more easily, view them all with the `halfrxns()` function.
+
+```{r} 
+halfrxns()
+```
+
+Indeed, the one we want is in the third row.
+
+```{r,error=TRUE}
+micstoich(donor = 'CH3COOH', acceptor = 'NO3-', product = 'N2')
+```
+
+How about sulfate?
+
+```{r}
+micstoich(donor = 'CH3COOH', acceptor = 'SO4-2', product = 'H2S')
+```
 
 # Methanogenesis
 
+Either use CO2 as the acceptor, but don't specify a product.
+
 ```{r}
-micstoich(donor = 'C6H12O6', acceptor = 'CO2')
-# Or equivalently
-micstoich(donor = 'C6H12O6', product = 'CH4')
+micstoich(donor = 'CH3COOH', acceptor = 'CO2')
+```
+
+Or specify the product.
+
+```{r}
+micstoich(donor = 'CH3COOH', product = 'CH4')
+```
+
+Or both.
+
+```{r}
+micstoich(donor = 'CH3COOH', acceptor = 'CO2', product = 'CH4')
 ```
 
 # Fermentation
 
+For fermentation, specify the organic product.
+
+Glucose to acetic acid.
+
 ```{r}
-# No acceptor means fermentation
 micstoich(donor = 'C6H12O6', product = 'CH3COOH')
+```
+
+Or to ethanol.
+
+```{r}
 micstoich(donor = 'C6H12O6', product = 'CH3CH2OH')
+```
+
+This is why bread rises.
+
+For production of only H2, use these approaches.
+
+```{r}
+micstoich(donor = 'C6H12O6', acceptor = 'H+')
+micstoich(donor = 'C6H12O6', product = 'H2')
+```
+
+Of course, we have been ignoring cell biomass, but it could be added.
+
+```{r}
+micstoich(donor = 'C6H12O6', product = 'H2', fs = 0.2)
+```
+
+For mixed fermenations, just combine the products into one formula.
+This example follows example 5.6 in Rittmann and McCarty (2020): fermentation of citrate to formate and acetate in a 1:2 molar ratio.
+We need uncharged substrates, so will use citric acid.
+
+```{r}
+micstoich(donor = 'COOHCH2COHCOOHCH2COOH', product = 'HCOOH (CH3COOH)2')
+```
+
+# Mixed substrates
+Mixed substrates follow the mixed product example.
+
+For example, a mix of lactose and protein (skim milk?) fermented to a mix of lactic and acetic acids plus hydrogen:
+
+```{r}
+micstoich(donor = '(C12H22O11)2 (C5H7O2N)3', product = '(C3H6O3)3 CH3COOH (H2)5')
+```
+
+
+
+
 # With biomass
 micstoich(donor = 'C6H12O6', product = 'CH3CH2OH', bioform = 'C5H7O2N', fs = 0.1)
 # H2
-micstoich(donor = 'C6H12O6', product = 'H2')
+micstoich(donor = 'C6H12O6', acceptor = 'H+')
 # Mixed products
 micstoich(donor = 'C6H12O6', product = 'CH3COOH CH2CH2COH (H2)3')
 micstoich(donor = 'C6H12O6', product = 'H2', bioform = 'C5H7O2N', fs = 0.1)
@@ -91,4 +180,7 @@ micstoich(donor = 'C6H12O6', acceptor = 'NO3-', product = 'NO2-')
 micstoich(donor = 'C6H12O6')
 micstoich(donor = 'C6H12O6', acceptor = 'Fe')
 micstoich(donor = 'C100P', acceptor = 'O2')
+orgrxn('HCOOH') * .111
+orgrxn('CH3COOH') * .889
+orgrxn('HCOOH (CH3COOH)2')
 ```
