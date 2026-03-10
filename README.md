@@ -1,14 +1,39 @@
 # micstoich
-Microbial stoichiometry following Rittmann and McCarty's "Environmental Biotechnology"
+R package for microbial reaction stoichiometry calculations following Rittmann and McCarty's "Environmental Biotechnology"
 
 # Maintainer
 Sasha D. Hafner (https://au.dk/sasha.hafner@bce.au.dk)
 
 # Description
-This repo contains some functions for predicting fermentation and methanogenesis stoichiometry from chemical formulas based on Rittmann and McCarty's approach.
-These are not polished or even completed functions but the repo is public in case users find them useful.
-The `readFormula()` function is from the [biogas package](https://github.com/sashahafner/biogas).
+The micstoich package calculates stoichiometry of microbial reactions using the half-reaction approach of Rittmann and McCarty (2001, 2020).
+It supports aerobic respiration, anaerobic respiration (nitrate, sulfate, CO2, and other acceptors), and fermentation.
+The user specifies the electron donor, acceptor, and optionally a synthesis fraction `fs` to include biomass production.
 
-# Reference
-Rittmann, B.E., McCarty, P.L., 2020. Environmental Biotechnology: Principles and Applications, Second Edition, 2nd edition. ed. McGraw Hill, New York, N.Y.
+# Installation
 
+Presently the package is only available on GitHub, so can be installed using the remotes (or devtools) package.
+
+```r
+remotes::install_github("AU-BCE-EE/micstoich")
+```
+
+# Quick example
+```r
+library(micstoich)
+
+# Aerobic oxidation of glucose with biomass synthesis
+micstoich(donor = "C6H12O6", acceptor = "O2", fs = 0.2)
+
+# Methanogenesis from acetic acid
+micstoich(donor = "CH3COOH", acceptor = "CO2")
+
+# Denitrification
+micstoich(donor = "CH3COOH", acceptor = "NO3-", product = "N2")
+```
+
+For more, see the vignette: `vignette("micstoich-start")`.
+
+# References
+Rittmann, B.E. and McCarty, P.L. (2001) *Environmental Biotechnology: Principles and Applications*. McGraw-Hill, New York.
+
+Rittmann, B.E. and McCarty, P.L. (2020) *Environmental Biotechnology: Principles and Applications*. 2nd ed. McGraw-Hill, New York.
