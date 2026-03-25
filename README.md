@@ -43,10 +43,10 @@ micstoich(donor = "CH3COOH", acceptor = "NO3-", product = "N2")
 # Empirical substrate, mixed fermentation products, with biomass synthesis 
 # and specified biomass formula (default is C5H7O2N)
 micstoich(
-  donor = 'C226.36 H404.24 O187.69 N1', 
-  product = '(C3H6O3)3 CH3COOH (H2)5', 
+  donor = "C226.36 H404.24 O187.69 N1", 
+  product = "(C3H6O3)3 CH3COOH (H2)5", 
   fs = 0.18, 
-  bioform = 'C3.82H6.45O1.62N0.95'
+  bioform = "C3.82H6.45O1.62N0.95"
 )
 
 # C226.36 H404.24 O187.69 N1                       NH4+ 
