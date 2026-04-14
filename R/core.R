@@ -23,6 +23,7 @@ micstoich <- function(
   acceptor_orig <- acceptor
 
   is_org_donor <- unname(readform(donor, elements = 'C')) > 0
+  is_org_acceptor <- unname(readform(acceptor, elements = 'C')) > 0
   if (!is.null(product)) {
     is_org_product <- unname(readform(product, elements = 'C')) > 0
   } else {
@@ -42,7 +43,17 @@ micstoich <- function(
   # Acceptor
   if (is.null(product) || (!is_org_product && product != 'H2')) {
     ra <- hrlookup(reactant = acceptor, product = product)
+  } else if (is_org_acceptor) {
+    ra <- - orgrxn(acceptor)
+    if (is_org_product) {
+      rp <- orgrxn(product)
+      ii <- unique(names(c(rp, ra)))
+      ra[ii[!ii %in% names(ra)]] <- 0
+      rp[ii[!ii %in% names(rp)]] <- 0
+      ra <- ra[ii] + rp[ii]
+    } 
   } else {
+    # Fermentation
     ra <- orgrxn(product)
   }
 
