@@ -17,36 +17,31 @@ micstoich <- function(
   }
 
   if (any(duplicated(c(donor, acceptor, product, bioform)))) {
-    stop('There are duplicates in input formulas (donor, acceptor, product, or bioform)! Change at least one (change in element order is OK)')
+    stop('There are duplicates in input formulas (donor, acceptor, product, or bioform)!\nChange at least one (change in element order is OK)')
   }
 
   acceptor_orig <- acceptor
+
+  is_org_donor <- unname(readform(donor, elements = 'C')) > 0
   if (!is.null(product)) {
-    acceptor <- paste(acceptor, product)
+    is_org_product <- unname(readform(product, elements = 'C')) > 0
+  } else {
+    is_org_product <- FALSE
   }
 
   # Half reactions
   # Donor
-  rd <- orgrxn(donor)
+  if (is_org_donor) {
+    rd <- orgrxn(donor)
+  } else if (!is_org_product) {
+    rd <- hrlookup(reactant = product, product = donor)
+  } else {
+    rd <- orgrxn(donor)
+  }
+
   # Acceptor
-  if (is.null(product) || (!grepl('C', product) && product != 'H2')) {
-    # Trim half reaction names to length of acceptor
-    substr(names(halfrxn), 1, nchar(acceptor))
-    anm <- as.character(lapply(strsplit(names(halfrxn), ' '), `[[`, 1))
-    pnm <- as.character(lapply(strsplit(names(halfrxn), ' '), `[[`, 2))
-    fnm <- names(halfrxn)
-    if (acceptor %in% anm || acceptor %in% fnm) {
-      # If in only one anm, use that
-      if (sum(acceptor == anm) == 1) {
-        ra <- halfrxn[[names(halfrxn)[acceptor == anm]]]
-      } else if (sum(acceptor == fnm) == 1) {
-        ra <- halfrxn[[names(halfrxn)[acceptor == fnm]]]
-      } else {
-        stop(paste0('product needed. More than one for this acceptor. Pairs are: ', paste(names(halfrxn), collapse = ', ')))
-      }
-    } else {
-      stop(paste0('Problem with acceptor argument: Not found. Extra space? Choices are: ', paste(names(halfrxn), collapse = ', ')))
-    }
+  if (is.null(product) || (!is_org_product && product != 'H2')) {
+    ra <- hrlookup(reactant = acceptor, product = product)
   } else {
     ra <- orgrxn(product)
   }
@@ -334,5 +329,47 @@ rxnbal <- function(rxn, tol = 1E-10) {
   } else {
     return(invisible(TRUE))
   }
+
+}
+
+# Half reaction lookup function
+# Note that either micstoich() donor, acceptor, and product can go in here 
+# and the assignment to reactant or product can be confusing
+hrlookup <- function(reactant = NULL, product = NULL) {
+
+  if (is.null(reactant) && is.null(product)) stop('Missing both reactant and product.')
+
+  # Separate half reaction names to acceptors/donor and products
+  # Reactant names
+  rnm <- as.character(lapply(strsplit(names(halfrxn), ' '), `[[`, 1))
+  # Product names
+  pnm <- as.character(lapply(strsplit(names(halfrxn), ' '), `[[`, 2))
+  # Full names (both)
+  fnm <- names(halfrxn)
+
+  # Then look up the acceptor/donor (or acceptor/donor product pair)
+  if (!is.null(reactant) && reactant %in% rnm) {
+    if (sum(reactant == rnm) == 1) {
+      # If in only one rnm, product not needed, return the one
+      rxn <- halfrxn[[names(halfrxn)[reactant == rnm]]]
+    } else { 
+      # When both reactant and product names are needed
+      if (!is.null(product)) {
+        rxn <- halfrxn[[names(halfrxn)[reactant == rnm & product == pnm]]]
+      } else {
+          stop(paste0('product needed for ', reactant, '. Pairs: ', paste(names(halfrxn), collapse = ', ')))
+      }
+    } 
+  } else if (product %in% pnm) {
+    if (sum(product == pnm) == 1) {
+      rxn <- halfrxn[[names(halfrxn)[product == pnm]]]
+    } else {
+      stop(paste0('Multiple matches for product ', product, '. Reactant needed. Pairs: ', paste(names(halfrxn), collapse = ', ')))
+    }
+  } else {
+    stop(paste0('Problem with reactant ', reactant, ' or product ', product, ': Not found. Extra space? Choices are: ', paste(names(halfrxn), collapse = ', ')))
+  }
+
+  return(rxn)
 
 }

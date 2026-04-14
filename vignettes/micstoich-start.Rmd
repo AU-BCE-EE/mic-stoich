@@ -8,7 +8,15 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
-library(micstoich)
+#library(micstoich)
+devtools::load_all()
+```
+
+# Testing
+
+```{r}
+micstoich('H2', acceptor = 'CO2', product = 'CH3COOH')
+micstoich('Fe+2', acceptor = 'O2')
 ```
 
 # Some simple examples
