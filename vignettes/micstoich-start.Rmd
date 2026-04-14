@@ -1,7 +1,7 @@
 ---
 title: "Getting started with micstoich"
 output: rmarkdown::html_vignette
-vignette: >
+vignette:
   %\VignetteIndexEntry{Getting started with micstoich}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
@@ -10,13 +10,6 @@ vignette: >
 ```{r setup, include = FALSE}
 #library(micstoich)
 devtools::load_all()
-```
-
-# Testing
-
-```{r}
-micstoich('H2', acceptor = 'CO2', product = 'CH3COOH')
-micstoich('Fe+2', acceptor = 'O2')
 ```
 
 # Some simple examples
@@ -78,7 +71,7 @@ Here we see we need to specify a product as well, because there are multiple pos
 We can find the one we want in the error message, where they are listed in `acceptor product` pairs: `'NO3- N2'`.
 Or more easily, view them all with the `halfrxns()` function.
 
-```{r} 
+```{r}
 halfrxns()
 ```
 
@@ -196,6 +189,72 @@ We need uncharged substrates, so will use citric acid.
 
 ```{r}
 micstoich(donor = 'COOHCH2COHCOOHCH2COOH', product = 'HCOOH (CH3COOH)2')
+```
+
+# Other pathways
+
+Mn reduction with organic donor
+```{r}
+micstoich('CH3COOH', acceptor = 'MnO2', product = 'Mn+2')
+```
+
+S reduction with H2 donor
+```{r}
+micstoich('H2', acceptor = 'S', product = 'H2S')
+```
+
+S reduction with organic donor
+```{r}
+micstoich('CH3COOH', acceptor = 'S', product = 'H2S')
+```
+
+Acetogenesis from H2
+```{r}
+micstoich('H2', acceptor = 'CO2', product = 'CH3COOH')
+```
+
+Chemolithotroph
+```{r}
+micstoich('Fe+2', acceptor = 'O2')
+```
+
+Another inorganic donor
+```{r}
+micstoich('H2S', acceptor = 'O2', product = 'SO4-2')
+```
+
+## Bioremediation pathways
+
+Arsenate reduction
+```{r}
+micstoich('CH3COOH', acceptor = 'HAsO4-2', product = 'H3AsO3')
+```
+
+Perchlorate reduction
+```{r}
+micstoich('CH3COOH', acceptor = 'ClO4-', product = 'Cl-')
+```
+
+Chromate reduction
+```{r}
+micstoich('CH3COOH', acceptor = 'CrO4-2', product = 'Cr+3')
+```
+
+Uranium reduction
+```{r}
+micstoich('CH3COOH', acceptor = 'UO2+2', product = 'U+4')
+```
+
+Selenate reduction
+```{r}
+micstoich('CH3COOH', acceptor = 'SeO4-2', product = 'Se')
+```
+
+## Fumarate reduction
+
+Fumarate reduction (fumaric acid = C4H4O4, succinic acid = C4H6O4)
+```{r}
+micstoich('CH3COOH', acceptor = 'C4H4O4', product = 'C4H6O4')
 ```
 
 # Mixed substrates

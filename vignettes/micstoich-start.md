@@ -1,34 +1,13 @@
 ---
 title: "Getting started with micstoich"
 output: rmarkdown::html_vignette
-vignette: >
+vignette:
   %\VignetteIndexEntry{Getting started with micstoich}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 
-
-# Testing
-
-
-``` r
-micstoich('H2', acceptor = 'CO2', product = 'CH3COOH')
-```
-
-```
-##      H2     CO2 CH3COOH     H2O 
-##  -0.500  -0.250   0.125   0.250
-```
-
-``` r
-micstoich('Fe+2', acceptor = 'O2')
-```
-
-```
-##  Fe+2    O2    H+  Fe+3   H2O 
-## -1.00 -0.25 -1.00  1.00  0.50
-```
 
 # Some simple examples
 
@@ -40,7 +19,7 @@ micstoich(donor = 'C6H12O6', acceptor = 'O2')
 ```
 
 ```
-##     C6H12O6          O2         CO2         H2O 
+##     C6H12O6          O2         H2O         CO2 
 ## -0.04166667 -0.25000000  0.25000000  0.25000000
 ```
 
@@ -56,10 +35,10 @@ micstoich(donor = 'C6H12O6', acceptor = 'O2', fs = 0.5)
 ```
 
 ```
-##     C6H12O6          O2        NH4+       HCO3-     C5H7O2N         CO2 
-## -0.04166667 -0.12500000 -0.02500000 -0.02500000  0.02500000  0.15000000 
-##         H2O 
-##  0.22500000
+##     C6H12O6          O2        NH4+       HCO3-     C5H7O2N         H2O 
+## -0.04166667 -0.12500000 -0.02500000 -0.02500000  0.02500000  0.22500000 
+##         CO2 
+##  0.15000000
 ```
 
 The default biomass composition is `C5H7O2N`, but it can be changed with `bioform`.
@@ -75,10 +54,10 @@ r1
 ```
 
 ```
-##     C6H12O6          O2        NH4+       HCO3-     C5H7O2N         CO2 
-## -0.04166667 -0.12500000 -0.02500000 -0.02500000  0.02500000  0.15000000 
-##         H2O 
-##  0.22500000
+##     C6H12O6          O2        NH4+       HCO3-     C5H7O2N         H2O 
+## -0.04166667 -0.12500000 -0.02500000 -0.02500000  0.02500000  0.22500000 
+##         CO2 
+##  0.15000000
 ```
 
 ``` r
@@ -128,8 +107,8 @@ micstoich(donor = 'CH3COOH', acceptor = 'NO3-')
 ```
 
 ```
-## Error in `halfrxn[[names(halfrxn)[reactant == rnm & product == pnm]]]`:
-## ! attempt to select less than one element in get1index
+## Error in `hrlookup()`:
+## ! product needed for NO3-. Pairs: O2 H2O, CO2 CH4, NO3- N2, NO3- NH3, NO3- NH4+, NO3- NO2-, NO2- NH3, NO2- NH4+, NO2- N2, N2 NH3, N2 NH4+, Fe+3 Fe+2, MnO2 Mn+2, H+ H2, SO4-2 H2S, SO4-2 SO3-2, SO4-2 S, SO4-2 S2O3-2, S H2S, HAsO4-2 H3AsO3, ClO4- Cl-, CrO4-2 Cr+3, UO2+2 U+4, SeO4-2 Se
 ```
 
 Here we see we need to specify a product as well, because there are multiple possibilities.
@@ -155,11 +134,18 @@ halfrxns()
 ## 10       N2     NH3                 -0.16667N2 -1.3333H+ 0.33333NH4+
 ## 11       N2    NH4+                 -0.16667N2 -1.3333H+ 0.33333NH4+
 ## 12     Fe+3    Fe+2                                     -1Fe+3 1Fe+2
-## 13       H+      H2                                       -1H+ 0.5H2
-## 14    SO4-2     H2S -0.125SO4-2 -1.1875H+ 0.0625H2S 0.0625HS- 0.5H2O
-## 15    SO4-2   SO3-2                   -0.5SO4-2 -1H+ 0.5SO3-2 0.5H2O
-## 16    SO4-2       S      -0.16667SO4-2 -1.3333H+ 0.16667S 0.66667H2O
-## 17    SO4-2  S2O3-2          -0.25SO4-2 -1.25H+ 0.125S2O3-2 0.625H2O
+## 13     MnO2    Mn+2                       -0.5MnO2 -2H+ 0.5Mn+2 1H2O
+## 14       H+      H2                                       -1H+ 0.5H2
+## 15    SO4-2     H2S -0.125SO4-2 -1.1875H+ 0.0625H2S 0.0625HS- 0.5H2O
+## 16    SO4-2   SO3-2                   -0.5SO4-2 -1H+ 0.5SO3-2 0.5H2O
+## 17    SO4-2       S      -0.16667SO4-2 -1.3333H+ 0.16667S 0.66667H2O
+## 18    SO4-2  S2O3-2          -0.25SO4-2 -1.25H+ 0.125S2O3-2 0.625H2O
+## 19        S     H2S                                -0.5S -1H+ 0.5H2S
+## 20  HAsO4-2  H3AsO3                -0.5HAsO4-2 -2H+ 0.5H3AsO3 0.5H2O
+## 21    ClO4-     Cl-                 -0.125ClO4- -1H+ 0.125Cl- 0.5H2O
+## 22   CrO4-2    Cr+3   -0.33333CrO4-2 -2.6667H+ 0.33333Cr+3 1.3333H2O
+## 23    UO2+2     U+4                       -0.5UO2+2 -2H+ 0.5U+4 1H2O
+## 24   SeO4-2      Se    -0.16667SeO4-2 -1.3333H+ 0.16667Se 0.66667H2O
 ```
 
 The one we want is in the third row.
@@ -170,8 +156,8 @@ micstoich(donor = 'CH3COOH', acceptor = 'NO3-', product = 'N2')
 ```
 
 ```
-## CH3COOH    NO3-      H+      N2     CO2     H2O 
-##  -0.125  -0.200  -0.200   0.100   0.250   0.350
+## CH3COOH    NO3-      H+      N2     H2O     CO2 
+##  -0.125  -0.200  -0.200   0.100   0.350   0.250
 ```
 
 How about sulfate?
@@ -182,8 +168,8 @@ micstoich(donor = 'CH3COOH', acceptor = 'SO4-2', product = 'H2S')
 ```
 
 ```
-## CH3COOH   SO4-2      H+     H2S     CO2     H2O     HS- 
-## -0.1250 -0.1250 -0.1875  0.0625  0.2500  0.2500  0.0625
+## CH3COOH   SO4-2      H+     H2S     HS-     H2O     CO2 
+## -0.1250 -0.1250 -0.1875  0.0625  0.0625  0.2500  0.2500
 ```
 
 But note that the package ignores elements other than C, H, O, and N in organic compounds, following Rittmann and McCarty (2001, 2020).
@@ -197,7 +183,7 @@ micstoich(donor = 'C226.36 H404.24 O187.69 N1 S0.52', acceptor = 'SO4-2', produc
 ```
 ## Warning in rxnbal(rtot, tol = tol): Elemental balance is off in reaction:
 ## -0.00107 C226.36 H404.24 O187.69 N1 S0.52, -0.125 SO4-2, -0.188 H+, 0.0625 H2S,
-## 0.242 CO2, 0.00107 NH4+, 0.00107 HCO3-, 0.214 H2O, 0.0625 HS-.
+## 0.0625 HS-, 0.214 H2O, 0.242 CO2, 0.00107 NH4+, 0.00107 HCO3-.
 ```
 
 ```
@@ -205,12 +191,12 @@ micstoich(donor = 'C226.36 H404.24 O187.69 N1 S0.52', acceptor = 'SO4-2', produc
 ##                     -0.001073768                     -0.125000000 
 ##                               H+                              H2S 
 ##                     -0.187500000                      0.062500000 
+##                              HS-                              H2O 
+##                      0.062500000                      0.214345538 
 ##                              CO2                             NH4+ 
 ##                      0.241984323                      0.001073768 
-##                            HCO3-                              H2O 
-##                      0.001073768                      0.214345538 
-##                              HS- 
-##                      0.062500000
+##                            HCO3- 
+##                      0.001073768
 ```
 
 we get an overall reaction, but it is not balanced.
@@ -225,7 +211,7 @@ r3 <- micstoich(donor = 'C226.36 H404.24 O187.69 N1 S0.52', acceptor = 'SO4-2', 
 ```
 ## Warning in rxnbal(rtot, tol = tol): Elemental balance is off in reaction:
 ## -0.00107 C226.36 H404.24 O187.69 N1 S0.52, -0.125 SO4-2, -0.188 H+, 0.0625 H2S,
-## 0.242 CO2, 0.00107 NH4+, 0.00107 HCO3-, 0.214 H2O, 0.0625 HS-.
+## 0.0625 HS-, 0.214 H2O, 0.242 CO2, 0.00107 NH4+, 0.00107 HCO3-.
 ```
 
 ``` r
@@ -234,8 +220,8 @@ rxnbal(r3)
 
 ```
 ## Warning in rxnbal(r3): Elemental balance is off in reaction: -0.00107 C226.36
-## H404.24 O187.69 N1 S0.52, -0.125 SO4-2, -0.188 H+, 0.0625 H2S, 0.242 CO2,
-## 0.00107 NH4+, 0.00107 HCO3-, 0.214 H2O, 0.0625 HS-.
+## H404.24 O187.69 N1 S0.52, -0.125 SO4-2, -0.188 H+, 0.0625 H2S, 0.0625 HS-,
+## 0.214 H2O, 0.242 CO2, 0.00107 NH4+, 0.00107 HCO3-.
 ```
 
 ```
@@ -257,12 +243,12 @@ micstoich(donor = 'C226.36 H404.24 O187.69 N1', acceptor = 'SO4-2', product = 'H
 ##               -0.001073768               -0.125000000 
 ##                         H+                        H2S 
 ##               -0.187500000                0.062500000 
+##                        HS-                        H2O 
+##                0.062500000                0.214345538 
 ##                        CO2                       NH4+ 
 ##                0.241984323                0.001073768 
-##                      HCO3-                        H2O 
-##                0.001073768                0.214345538 
-##                        HS- 
-##                0.062500000
+##                      HCO3- 
+##                0.001073768
 ```
 
 # Methanogenesis
@@ -287,8 +273,8 @@ micstoich(donor = 'CH3COOH', product = 'CH4')
 ```
 
 ```
-## CH3COOH     CH4     CO2 
-##  -0.125   0.125   0.125
+## Error in `strsplit(form, "\\(")[[1]]`:
+## ! subscript out of bounds
 ```
 
 Or both.
@@ -299,8 +285,8 @@ micstoich(donor = 'CH3COOH', acceptor = 'CO2', product = 'CH4')
 ```
 
 ```
-## CH3COOH     CO2     CH4 
-##  -0.125   0.125   0.125
+## Error in `-orgrxn(acceptor)`:
+## ! invalid argument to unary operator
 ```
 
 Hydrogenotrophic methanogenesis has similar flexibility.
@@ -311,8 +297,8 @@ micstoich(donor = 'H2', acceptor = 'CO2')
 ```
 
 ```
-##     H2    CO2    H2O    CH4 
-## -0.500 -0.125  0.250  0.125
+##     H2    CO2    CH4    H2O 
+## -0.500 -0.125  0.125  0.250
 ```
 
 ``` r
@@ -320,8 +306,8 @@ micstoich(donor = 'H2', product = 'CH4')
 ```
 
 ```
-##     H2    CO2    CH4    H2O 
-## -0.500 -0.125  0.125  0.250
+## Error in `strsplit(form, "\\(")[[1]]`:
+## ! subscript out of bounds
 ```
 
 ``` r
@@ -329,8 +315,8 @@ micstoich(donor = 'H2', acceptor = 'CO2', product = 'CH4')
 ```
 
 ```
-##     H2    CO2    CH4    H2O 
-## -0.500 -0.125  0.125  0.250
+## Error in `-orgrxn(acceptor)`:
+## ! invalid argument to unary operator
 ```
 
 The different calls do result in different element order in the output.
@@ -379,8 +365,8 @@ micstoich(donor = 'C6H12O6', product = 'CH3COOH')
 ```
 
 ```
-##     C6H12O6     CH3COOH 
-## -0.04166667  0.12500000
+## Error in `strsplit(form, "\\(")[[1]]`:
+## ! subscript out of bounds
 ```
 
 Or to ethanol.
@@ -391,8 +377,8 @@ micstoich(donor = 'C6H12O6', product = 'CH3CH2OH')
 ```
 
 ```
-##     C6H12O6    CH3CH2OH         CO2 
-## -0.04166667  0.08333333  0.08333333
+## Error in `strsplit(form, "\\(")[[1]]`:
+## ! subscript out of bounds
 ```
 
 Here we get carbon dioxide too.
@@ -406,8 +392,8 @@ micstoich(donor = 'C6H12O6', acceptor = 'H+')
 ```
 
 ```
-##     C6H12O6         H2O         CO2          H2 
-## -0.04166667 -0.25000000  0.25000000  0.50000000
+##     C6H12O6         H2O          H2         CO2 
+## -0.04166667 -0.25000000  0.50000000  0.25000000
 ```
 
 ``` r
@@ -415,8 +401,8 @@ micstoich(donor = 'C6H12O6', product = 'H2')
 ```
 
 ```
-##     C6H12O6         H2O          H2         CO2 
-## -0.04166667 -0.25000000  0.50000000  0.25000000
+## Error in `strsplit(form, "\\(")[[1]]`:
+## ! subscript out of bounds
 ```
 
 Of course, we have been ignoring cell biomass, but it could be added.
@@ -427,10 +413,8 @@ micstoich(donor = 'C6H12O6', product = 'H2', fs = 0.2)
 ```
 
 ```
-##     C6H12O6        NH4+       HCO3-         H2O          H2     C5H7O2N 
-## -0.04166667 -0.01000000 -0.01000000 -0.16000000  0.40000000  0.01000000 
-##         CO2 
-##  0.21000000
+## Error in `strsplit(form, "\\(")[[1]]`:
+## ! subscript out of bounds
 ```
 
 For mixed fermentations, just combine the products into one formula.
@@ -443,10 +427,146 @@ micstoich(donor = 'COOHCH2COHCOOHCH2COOH', product = 'HCOOH (CH3COOH)2')
 ```
 
 ```
-## COOHCH2COHCOOHCH2COOH                   H2O      HCOOH (CH3COOH)2 
-##           -0.05555556           -0.05555556            0.05555556 
-##                   CO2 
-##            0.05555556
+## Error in `strsplit(form, "\\(")[[1]]`:
+## ! subscript out of bounds
+```
+
+# Other pathways
+
+Mn reduction with organic donor
+
+``` r
+micstoich('CH3COOH', acceptor = 'MnO2', product = 'Mn+2')
+```
+
+```
+## CH3COOH    MnO2      H+    Mn+2     H2O     CO2 
+##  -0.125  -0.500  -1.000   0.500   0.750   0.250
+```
+
+S reduction with H2 donor
+
+``` r
+micstoich('H2', acceptor = 'S', product = 'H2S')
+```
+
+```
+##   H2    S  H2S 
+## -0.5 -0.5  0.5
+```
+
+S reduction with organic donor
+
+``` r
+micstoich('CH3COOH', acceptor = 'S', product = 'H2S')
+```
+
+```
+## CH3COOH       S     H2O     H2S     CO2 
+##  -0.125  -0.500  -0.250   0.500   0.250
+```
+
+Acetogenesis from H2
+
+``` r
+micstoich('H2', acceptor = 'CO2', product = 'CH3COOH')
+```
+
+```
+## Error in `-orgrxn(acceptor)`:
+## ! invalid argument to unary operator
+```
+
+Chemolithotroph
+
+``` r
+micstoich('Fe+2', acceptor = 'O2')
+```
+
+```
+##  Fe+2    O2    H+   H2O  Fe+3 
+## -1.00 -0.25 -1.00  0.50  1.00
+```
+
+Another inorganic donor
+
+``` r
+micstoich('H2S', acceptor = 'O2', product = 'SO4-2')
+```
+
+```
+##     H2S      O2     HS-   SO4-2      H+ 
+## -0.0625 -0.2500 -0.0625  0.1250  0.1875
+```
+
+## Bioremediation pathways
+
+Arsenate reduction
+
+``` r
+micstoich('CH3COOH', acceptor = 'HAsO4-2', product = 'H3AsO3')
+```
+
+```
+## CH3COOH HAsO4-2      H+  H3AsO3     H2O     CO2 
+##  -0.125  -0.500  -1.000   0.500   0.250   0.250
+```
+
+Perchlorate reduction
+
+``` r
+micstoich('CH3COOH', acceptor = 'ClO4-', product = 'Cl-')
+```
+
+```
+## CH3COOH   ClO4-     Cl-     H2O     CO2 
+##  -0.125  -0.125   0.125   0.250   0.250
+```
+
+Chromate reduction
+
+``` r
+micstoich('CH3COOH', acceptor = 'CrO4-2', product = 'Cr+3')
+```
+
+```
+##    CH3COOH     CrO4-2         H+       Cr+3        H2O        CO2 
+## -0.1250000 -0.3333333 -1.6666667  0.3333333  1.0833333  0.2500000
+```
+
+Uranium reduction
+
+``` r
+micstoich('CH3COOH', acceptor = 'UO2+2', product = 'U+4')
+```
+
+```
+## CH3COOH   UO2+2      H+     U+4     H2O     CO2 
+##  -0.125  -0.500  -1.000   0.500   0.750   0.250
+```
+
+Selenate reduction
+
+``` r
+micstoich('CH3COOH', acceptor = 'SeO4-2', product = 'Se')
+```
+
+```
+##    CH3COOH     SeO4-2         H+         Se        H2O        CO2 
+## -0.1250000 -0.1666667 -0.3333333  0.1666667  0.4166667  0.2500000
+```
+
+## Fumarate reduction
+
+Fumarate reduction (fumaric acid = C4H4O4, succinic acid = C4H6O4)
+
+``` r
+micstoich('CH3COOH', acceptor = 'C4H4O4', product = 'C4H6O4')
+```
+
+```
+##     CH3COOH      C4H4O4         H2O      C4H6O4         CO2          H+ 
+## -0.12500000 -0.08333333 -0.29761905  0.07142857  0.29761905  1.00000000
 ```
 
 # Mixed substrates
@@ -460,10 +580,8 @@ micstoich(donor = '(C12H22O11)5 (C5H7O2N)', product = '(C3H6O3)3 CH3COOH (H2)5')
 ```
 
 ```
-##  (C12H22O11)5 (C5H7O2N)                     H2O (C3H6O3)3 CH3COOH (H2)5 
-##            -0.003846154            -0.080911681             0.018518519 
-##                     CO2                    NH4+                   HCO3- 
-##             0.042450142             0.003846154             0.003846154
+## Error in `strsplit(form, "\\(")[[1]]`:
+## ! subscript out of bounds
 ```
 
 The mixed donor and product are no problem, but we have to manually separate the results.
@@ -514,7 +632,7 @@ micstoich(donor = 'X', acceptor = 'O2')
 
 ```
 ## Error in `hrlookup()`:
-## ! Problem with reactant  or product X: Not found. Extra space? Choices are: O2 H2O, CO2 CH4, NO3- N2, NO3- NH3, NO3- NH4+, NO3- NO2-, NO2- NH3, NO2- NH4+, NO2- N2, N2 NH3, N2 NH4+, Fe+3 Fe+2, H+ H2, SO4-2 H2S, SO4-2 SO3-2, SO4-2 S, SO4-2 S2O3-2
+## ! Problem with reactant  or product X: Not found. Extra space? Choices are: O2 H2O, CO2 CH4, NO3- N2, NO3- NH3, NO3- NH4+, NO3- NO2-, NO2- NH3, NO2- NH4+, NO2- N2, N2 NH3, N2 NH4+, Fe+3 Fe+2, MnO2 Mn+2, H+ H2, SO4-2 H2S, SO4-2 SO3-2, SO4-2 S, SO4-2 S2O3-2, S H2S, HAsO4-2 H3AsO3, ClO4- Cl-, CrO4-2 Cr+3, UO2+2 U+4, SeO4-2 Se
 ```
 
 A good way to proceed in case of a strange error message is to try the lower-level functions described below.
@@ -569,8 +687,8 @@ micstoich(donor = 'C5H6O2N', product = 'H6C5O2N')
 ```
 
 ```
-##     C5H6O2N     H6C5O2N 
-## -0.05263158  0.05263158
+## Error in `strsplit(form, "\\(")[[1]]`:
+## ! subscript out of bounds
 ```
 
 ``` r
@@ -578,8 +696,8 @@ micstoich(donor = 'H7C5O2N', acceptor = 'O2', bioform = 'C5H7O2N', fs = 0.2)
 ```
 
 ```
-## H7C5O2N      O2 C5H7O2N     CO2    NH4+   HCO3-     H2O 
-##   -0.05   -0.20    0.01    0.16    0.04    0.04    0.04
+## H7C5O2N      O2 C5H7O2N     H2O     CO2    NH4+   HCO3- 
+##   -0.05   -0.20    0.01    0.04    0.16    0.04    0.04
 ```
 
 or even just adding a space.
@@ -590,8 +708,8 @@ micstoich(donor = 'C5 H6O2N', product = 'C5H6O2N')
 ```
 
 ```
-##    C5 H6O2N     C5H6O2N 
-## -0.05263158  0.05263158
+## Error in `strsplit(form, "\\(")[[1]]`:
+## ! subscript out of bounds
 ```
 
 ``` r
@@ -599,8 +717,8 @@ micstoich(donor = 'C5 H7O2N', acceptor = 'O2', bioform = 'C5H7O2N', fs = 0.2)
 ```
 
 ```
-## C5 H7O2N       O2  C5H7O2N      CO2     NH4+    HCO3-      H2O 
-##    -0.05    -0.20     0.01     0.16     0.04     0.04     0.04
+## C5 H7O2N       O2  C5H7O2N      H2O      CO2     NH4+    HCO3- 
+##    -0.05    -0.20     0.01     0.04     0.16     0.04     0.04
 ```
 
 # Molar mass and COD'
