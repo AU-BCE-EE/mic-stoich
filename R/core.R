@@ -44,14 +44,11 @@ micstoich <- function(
   if (is.null(product) || (!is_org_product && product != 'H2')) {
     ra <- hrlookup(reactant = acceptor, product = product)
   } else if (is_org_acceptor) {
-    ra <- - orgrxn(acceptor)
     if (is_org_product) {
-      rp <- orgrxn(product)
-      ii <- unique(names(c(rp, ra)))
-      ra[ii[!ii %in% names(ra)]] <- 0
-      rp[ii[!ii %in% names(rp)]] <- 0
-      ra <- ra[ii] + rp[ii]
-    } 
+      ra <- add_halfrxns(-orgrxn(acceptor), orgrxn(product))
+    } else {
+      ra <- -orgrxn(acceptor)
+    }
   } else {
     # Fermentation
     ra <- orgrxn(product)
@@ -60,23 +57,10 @@ micstoich <- function(
   # Synthesis
   rc <- orgrxn(bioform)
 
-  # Align
-  ii <- unique(names(c(rd, rc, ra)))
-
-  # Blanks
-  rd[ii[!ii %in% names(rd)]] <- 0
-  rc[ii[!ii %in% names(rc)]] <- 0
-  ra[ii[!ii %in% names(ra)]] <- 0
-
-  # Order
-  rd <- rd[ii]
-  rc <- rc[ii]
-  ra <- ra[ii]
-
   fe <- 1 - fs
-  
+
   # Combine
-  rtot <- fe * ra + fs * rc  - rd
+  rtot <- add_halfrxns(fe * ra, fs * rc, -rd)
 
   rtot[abs(rtot) < tol] <- 0
   rtot <- rtot[rtot != 0]
@@ -341,6 +325,17 @@ rxnbal <- function(rxn, tol = 1E-10) {
     return(invisible(TRUE))
   }
 
+}
+
+# Add half reactions, aligning by species name and padding missing species with zero
+add_halfrxns <- function(...) {
+  rxns <- list(...)
+  ii <- unique(unlist(lapply(rxns, names)))
+  result <- setNames(numeric(length(ii)), ii)
+  for (r in rxns) {
+    result[names(r)] <- result[names(r)] + r
+  }
+  result
 }
 
 # Half reaction lookup function
