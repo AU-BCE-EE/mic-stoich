@@ -53,28 +53,14 @@ micstoich <- function(
   if (is_org_donor) {
     rd <- orgrxn(donor)
   } else if (!is_org_product) {
-    rd <- tryCatch(
-      hrlookup(reactant = product, product = donor),
-      error = function(e) stop(
-        paste0('Inorganic donor "', donor, '" not found in the half-reaction library.\n',
-               'Check spelling or run names(halfrxn) to see available compounds.'),
-        call. = FALSE
-      )
-    )
+    rd <- hrlookup(reactant = product, product = donor)
   } else {
     rd <- orgrxn(donor)
   }
 
   # Acceptor
   if (is.null(product) || (!is_org_product && product != 'H2')) {
-    ra <- tryCatch(
-      hrlookup(reactant = acceptor, product = product),
-      error = function(e) stop(
-        paste0('Acceptor "', acceptor, '" not found in the half-reaction library.\n',
-               'Check spelling or run names(halfrxn) to see available compounds.'),
-        call. = FALSE
-      )
-    )
+    ra <- hrlookup(reactant = acceptor, product = product)
   } else if (is_org_acceptor) {
     if (is_org_product) {
       ra <- add_halfrxns(-orgrxn(acceptor), orgrxn(product))
