@@ -41,7 +41,11 @@ micstoich <- function(
   acceptor_orig <- acceptor
 
   is_org_donor <- unname(readform(donor, elements = 'C')) > 0
-  is_org_acceptor <- unname(readform(acceptor, elements = 'C')) > 0
+  if (!is.null(acceptor)) {
+    is_org_acceptor <- unname(readform(acceptor, elements = 'C')) > 0
+  } else {
+    is_org_acceptor <- FALSE
+  }
   if (!is.null(product)) {
     is_org_product <- unname(readform(product, elements = 'C')) > 0
   } else {

@@ -275,6 +275,7 @@ The mixed donor and product are no problem, but we have to manually separate the
 The following calls are missing something, and the error messages are meant to explain the problem.
 
 ```{r, error = TRUE}
+micstoich('CH4S', acceptor = 'O2')
 micstoich('NH3', acceptor = 'O2')
 micstoich(donor = 'C6H12O6')
 micstoich(donor = 'C6H12O6', acceptor = 'Fe')
