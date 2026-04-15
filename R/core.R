@@ -8,6 +8,24 @@ micstoich <- function(
   tol = 1E-10
 ) {
 
+  # Trim whitespace from formula inputs
+  donor <- trimws(donor)
+  if (!is.null(acceptor)) acceptor <- trimws(acceptor)
+  if (!is.null(product))  product  <- trimws(product)
+  bioform <- trimws(bioform)
+
+  # Basic formula validation: must contain at least one uppercase element symbol
+  check_formula <- function(x, arg) {
+    if (!grepl('[A-Z]', x))
+      stop(paste0('"', x, '" does not look like a chemical formula (', arg,
+                  ' argument). Use element symbols, e.g. "C6H12O6", "NO3-".'),
+           call. = FALSE)
+  }
+  check_formula(donor, 'donor')
+  if (!is.null(acceptor)) check_formula(acceptor, 'acceptor')
+  if (!is.null(product))  check_formula(product,  'product')
+  check_formula(bioform, 'bioform')
+
   if (is.null(acceptor) && is.null(product)) {
     stop('acceptor and product arguments cannot both be missing.')
   }
@@ -35,14 +53,28 @@ micstoich <- function(
   if (is_org_donor) {
     rd <- orgrxn(donor)
   } else if (!is_org_product) {
-    rd <- hrlookup(reactant = product, product = donor)
+    rd <- tryCatch(
+      hrlookup(reactant = product, product = donor),
+      error = function(e) stop(
+        paste0('Inorganic donor "', donor, '" not found in the half-reaction library.\n',
+               'Check spelling or run names(halfrxn) to see available compounds.'),
+        call. = FALSE
+      )
+    )
   } else {
     rd <- orgrxn(donor)
   }
 
   # Acceptor
   if (is.null(product) || (!is_org_product && product != 'H2')) {
-    ra <- hrlookup(reactant = acceptor, product = product)
+    ra <- tryCatch(
+      hrlookup(reactant = acceptor, product = product),
+      error = function(e) stop(
+        paste0('Acceptor "', acceptor, '" not found in the half-reaction library.\n',
+               'Check spelling or run names(halfrxn) to see available compounds.'),
+        call. = FALSE
+      )
+    )
   } else if (is_org_acceptor) {
     if (is_org_product) {
       ra <- add_halfrxns(-orgrxn(acceptor), orgrxn(product))
@@ -343,7 +375,7 @@ add_halfrxns <- function(...) {
 # and the assignment to reactant or product can be confusing
 hrlookup <- function(reactant = NULL, product = NULL) {
 
-  if (is.null(reactant) && is.null(product)) stop('Missing both reactant and product.')
+  if (is.null(reactant) && is.null(product)) stop('Missing both reactant and product.', call. = FALSE)
 
   # Separate half reaction names to acceptors/donor and products
   # Reactant names
@@ -363,17 +395,24 @@ hrlookup <- function(reactant = NULL, product = NULL) {
       if (!is.null(product)) {
         rxn <- halfrxn[[names(halfrxn)[reactant == rnm & product == pnm]]]
       } else {
-          stop(paste0('product needed for ', reactant, '. Pairs: ', paste(names(halfrxn), collapse = ', ')))
+          stop(paste0('Multiple half-reactions match "', reactant, '". Specify product too. ',
+                      'Run names(halfrxn) to see available reactant/product pairs.'),
+               call. = FALSE)
       }
     } 
   } else if (product %in% pnm) {
     if (sum(product == pnm) == 1) {
       rxn <- halfrxn[[names(halfrxn)[product == pnm]]]
     } else {
-      stop(paste0('Multiple matches for product ', product, '. Reactant needed. Pairs: ', paste(names(halfrxn), collapse = ', ')))
+      stop(paste0('Multiple half-reactions match product "', product, '". Specify reactant too. ',
+                  'Run names(halfrxn) to see available reactant/product pairs.'),
+           call. = FALSE)
     }
   } else {
-    stop(paste0('Problem with reactant ', reactant, ' or product ', product, ': Not found. Extra space? Choices are: ', paste(names(halfrxn), collapse = ', ')))
+    nm <- if (!is.null(reactant)) reactant else product
+    stop(paste0('"', nm, '" not found in the half-reaction library. ',
+                'Check spelling or run names(halfrxn) to see available compounds.'),
+         call. = FALSE)
   }
 
   return(rxn)
