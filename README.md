@@ -1,13 +1,18 @@
 # micstoich
+
 R package for microbial reaction stoichiometry calculations following Rittmann and McCarty's "Environmental Biotechnology"
 
 # Maintainer
+
 Sasha D. Hafner (https://au.dk/sasha.hafner@bce.au.dk)
 
 # Description
+
 The micstoich package calculates stoichiometry of microbial reactions using the half-reaction approach of Rittmann and McCarty (2001, 2020).
 It supports aerobic respiration, anaerobic respiration (nitrate, sulfate, CO2, and other acceptors), and fermentation.
 The user specifies the electron donor, acceptor, and optionally a synthesis fraction `fs` to include biomass production.
+
+For a web app interface to the package, see https://biotransformers.shinyapps.io/micstoich/.
 
 # Installation
 
@@ -17,7 +22,8 @@ Presently the package is only available on GitHub, so can be installed using the
 remotes::install_github("AU-BCE-EE/micstoich")
 ```
 
-# Quick example
+# Quick examples
+
 ```r
 library(micstoich)
 
