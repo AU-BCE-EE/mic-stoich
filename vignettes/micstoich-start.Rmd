@@ -216,6 +216,8 @@ micstoich('H2', acceptor = 'CO2', product = 'CH3COOH')
 Chemolithotroph
 ```{r}
 micstoich('Fe+2', acceptor = 'O2')
+micstoich('NH3', acceptor = 'O2', product = 'N2')
+micstoich('NH4+', acceptor = 'O2', product = 'N2')
 ```
 
 Another inorganic donor
