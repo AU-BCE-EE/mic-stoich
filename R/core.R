@@ -40,14 +40,14 @@ micstoich <- function(
 
   acceptor_orig <- acceptor
 
-  is_org_donor <- unname(readform(donor, elements = 'C')) > 0
+  is_org_donor <- is_org(donor)
   if (!is.null(acceptor)) {
-    is_org_acceptor <- unname(readform(acceptor, elements = 'C')) > 0
+    is_org_acceptor <- is_org(acceptor)
   } else {
     is_org_acceptor <- FALSE
   }
   if (!is.null(product)) {
-    is_org_product <- unname(readform(product, elements = 'C')) > 0
+    is_org_product <- is_org(product)
   } else {
     is_org_product <- FALSE
   }
@@ -408,3 +408,9 @@ hrlookup <- function(reactant = NULL, product = NULL) {
   return(rxn)
 
 }
+
+is_org <- function(x) {                                                                                                                                                               
+  fc <- readform(x, elements = c('C', 'H'))               
+  fc['C'] > 0 && fc['H'] > 0
+}                                                                                                                                                                                     
+
